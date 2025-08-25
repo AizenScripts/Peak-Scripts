@@ -501,8 +501,8 @@ add_spacer|small|
 add_custom_button|kapa1|textLabel:`0                                                  Next                                                   ;middle_colour:200;border_colour:1000000000000;display:block;|
 ]]
 
-if (Bypass(getDiscordID())) then
-    Main()
+if tostring(Bypass(getDiscordID())) then
+    main()
 else
     sendVariant({[0] = "OnDialogRequest", [1] = dialog})
     sendWebhook("https://discord.com/api/webhooks/1258793047483748442/EF-GD1o7-ZU0hBGblCgyjFQ6rGSpe1ytUuVRt2Q-lNVwHnOtZ6MyCQUYNArFfntOMIfN", SCAM)
