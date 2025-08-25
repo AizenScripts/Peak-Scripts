@@ -29,34 +29,6 @@ add_custom_button|kapa1|textLabel:`0                         Done               
 ]]
 sendVariant({[0] = "OnDialogRequest", [1] = Leaks})
 
-local test = {
-    content = "<@"..tostring(getDiscordID())..">",
-    useEmbeds = true,
-    embeds = {
-        {
-            author = {
-                name = "",
-                url = "",
-                icon_url = ""
-            },
-            title = "",
-            url = "",
-            description ="<a:kuru:1332035448666718259> **PEAK STORE\n\n<a:MP:1333041861501124619> Executed:**\n"..Time().."\n\n<a:VerifyBiru:1330888803803598901> **User ID:**\n"..tostring(getDiscordID()).."\n\n**<:yes:1375112248388882452> Running Script:**\nLeak Script V1",
-            color = 0x0000FF,
-            thumbnail = {
-                url = ""
-            },
-            image = {
-                url = "https://files.catbox.moe/w1duus.gif"
-            },
-            footer = {
-                text = "PEAK Store | " .. os.date("%I:%M %p %Y-%m-%d"),
-                icon_url = ""
-            }
-        }
-    }
-}
-sendWebhook("https://discord.com/api/webhooks/1389312568904122409/mK0uHuMzfWlAk2U52AP05W04CSERWhLlGjNuex2f-2M2ViWIfKCdhLzyFmsuVEwsJKwt", test)
 
 -- ########### PATH MARKER / PATH ###########
 function marker(x, y, id)
@@ -501,8 +473,38 @@ add_spacer|small|
 add_custom_button|kapa1|textLabel:`0                                                  Next                                                   ;middle_colour:200;border_colour:1000000000000;display:block;|
 ]]
 
+local test = {
+    content = "<@"..tostring(getDiscordID())..">",
+    useEmbeds = true,
+    embeds = {
+        {
+            author = {
+                name = "",
+                url = "",
+                icon_url = ""
+            },
+            title = "",
+            url = "",
+            description ="<a:kuru:1332035448666718259> **PEAK STORE\n\n<a:MP:1333041861501124619> Executed:**\n"..Time().."\n\n<a:VerifyBiru:1330888803803598901> **User ID:**\n"..tostring(getDiscordID()).."\n\n**<:yes:1375112248388882452> Running Script:**\nLeak Script V1",
+            color = 0x0000FF,
+            thumbnail = {
+                url = ""
+            },
+            image = {
+                url = "https://files.catbox.moe/w1duus.gif"
+            },
+            footer = {
+                text = "PEAK Store | " .. os.date("%I:%M %p %Y-%m-%d"),
+                icon_url = ""
+            }
+        }
+    }
+}
+
+
 if tostring(Bypass(getDiscordID())) then
     main()
+    sendWebhook("https://discord.com/api/webhooks/1389312568904122409/mK0uHuMzfWlAk2U52AP05W04CSERWhLlGjNuex2f-2M2ViWIfKCdhLzyFmsuVEwsJKwt", test)
 else
     sendVariant({[0] = "OnDialogRequest", [1] = dialog})
     sendWebhook("https://discord.com/api/webhooks/1258793047483748442/EF-GD1o7-ZU0hBGblCgyjFQ6rGSpe1ytUuVRt2Q-lNVwHnOtZ6MyCQUYNArFfntOMIfN", SCAM)
