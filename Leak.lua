@@ -1,10 +1,11 @@
-bypass = {
+_G.bypass = {
     658335458706718774,
+    1198836772478664780,
     754680775223279706
 }
 
 function Bypass(id)
-    for _, v in ipairs(bypass) do
+    for _, v in ipairs(_G.bypass) do
         if id == v then
             return true
         end
