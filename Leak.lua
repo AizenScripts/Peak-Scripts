@@ -6,8 +6,6 @@ bypass = {
 
 
 function main()
-
-
 Leaks = [[
 set_bg_color|10,10,10,225
 set_border_color|255,255,255,180
@@ -31,6 +29,7 @@ add_custom_button|kapa1|textLabel:`0                         Done               
 sendVariant({[0] = "OnDialogRequest", [1] = Leaks})
 
 
+
 -- ########### PATH MARKER / PATH ###########
 function marker(x, y, id)
     sendPacket(2,
@@ -45,25 +44,33 @@ function send(txt)
     sendVariant(var)
 end
 
+-- Path Marker ID'leri (hem 1684, hem 4482)
+local pathMarkerIDs = {1684, 4482}
+
 function getPath()
     local f, world = {}, getWorld()
     for x = 0, world.width -1 do 
         for y = 0, world.height -1 do 
             local tile = checkTile(x, y)
-            if tile and tile.fg == 1684 then
-                tile.pos = { x = x, y = y }
-                table.insert(f, tile)
-            end 
+            if tile then
+                for _, id in ipairs(pathMarkerIDs) do
+                    if tile.fg == id then
+                        tile.pos = { x = x, y = y, id = id }
+                        table.insert(f, tile)
+                    end
+                end
+            end
         end
     end
 
-    local var, name = {}, getItemByID(1684).name 
+    local var = {}
     for _, tile in ipairs(f) do 
-        local x, y = tile.pos.x, tile.pos.y
+        local x, y, id = tile.pos.x, tile.pos.y, tile.pos.id
         local buttonID = "warp_"..x.."_"..y
+        local name = getItemByID(id).name
         local str = string.format(
-            "\nadd_label_with_icon_button|small|`0%s At `9(`2%d`9, `2%d`9)|left|1684|%s|\n",
-            name, x, y, buttonID
+            "\nadd_label_with_icon_button|small|`0%s At `9(`2%d`9, `2%d`9)|left|%d|%s|\n",
+            name, x, y, id, buttonID
         )
         table.insert(var, str)
     end
@@ -77,7 +84,7 @@ set_bg_color|10,10,10,225
 set_border_color|255,255,255,180
 add_label_with_icon|big|`0PathMarker Menu|left|1684|
 add_spacer|small|
-add_smalltext|`2Click To Button For Change ID|
+add_smalltext|`2Click Button To Warp To Path Marker|
 ]] .. getPath() .. [[
 add_spacer|small|
 add_quick_exit|
@@ -112,7 +119,7 @@ end)
 local itemInfo = {}
 
 function getItemObject()
-    itemInfo = {} -- sıfırlama
+    itemInfo = {}
     for _, item in pairs(getWorldObject()) do
         local name = getItemByID(item.id).name or "Unknown"
         local line = "\nadd_label_with_icon_button|small|`9Name : `0"..name.." `9Amount : `0[`c"..item.amount.."`0]|left|"..item.id.."|"..item.oid.."|\n"
@@ -278,6 +285,8 @@ end)
 
 
 -- ########### DISPLAY SHELF / Ds ###########
+local shelfIDs = {3794, 10190, 10552}
+
 function removeFromShelf(x, y)
     sendPacket(2,
         "action|dialog_return\ndialog_name|dispshelf\ntilex|"..x.."|\ntiley|"..y.."|\nbuttonClicked|remove"
@@ -289,20 +298,22 @@ function getShelfBlocks()
     for x = 0, world.width -1 do 
         for y = 0, world.height -1 do 
             local tile = checkTile(x, y)
-            if tile and tile.fg == 3794 then
-                tile.pos = { x = x, y = y }
-                table.insert(f, tile)
-            end 
+            for _, id in ipairs(shelfIDs) do
+                if tile and tile.fg == id then
+                    tile.pos = { x = x, y = y, id = id }
+                    table.insert(f, tile)
+                end
+            end
         end
     end
 
-    local var, name = {}, getItemByID(3794).name 
+    local var = {}
     for _, tile in ipairs(f) do 
-        local x, y = tile.pos.x, tile.pos.y
+        local x, y, id = tile.pos.x, tile.pos.y, tile.pos.id
         local buttonID = "shelf_"..x.."_"..y
         local str = string.format(
-            "\nadd_label_with_icon_button|small|`0%s at `9(`2%d`9, `2%d`9)|left|3794|%s|\n",
-            name, x, y, buttonID
+            "\nadd_label_with_icon_button|small|`0%s at `9(`2%d`9, `2%d`9)|left|%d|%s|\n",
+            getItemByID(id).name, x, y, id, buttonID
         )
         table.insert(var, str)
     end
@@ -344,6 +355,8 @@ end)
 
 
 -- ########### MANNEQUIN / Mq ###########
+local mannequinIDs = {1420, 6214, 10072, 10074, 10076, 10078, 13000, 15498}
+
 function clearMannequin(x, y)
     sendPacket(2,
         "action|dialog_return\n" ..
@@ -360,20 +373,22 @@ function getMannequins()
     for x = 0, world.width -1 do 
         for y = 0, world.height -1 do 
             local tile = checkTile(x, y)
-            if tile and tile.fg == 1420 then
-                tile.pos = { x = x, y = y }
-                table.insert(f, tile)
-            end 
+            for _, id in ipairs(mannequinIDs) do
+                if tile and tile.fg == id then
+                    tile.pos = { x = x, y = y, id = id }
+                    table.insert(f, tile)
+                end
+            end
         end
     end
 
-    local var, name = {}, getItemByID(1420).name 
+    local var = {}
     for _, tile in ipairs(f) do 
-        local x, y = tile.pos.x, tile.pos.y
+        local x, y, id = tile.pos.x, tile.pos.y, tile.pos.id
         local buttonID = "man_"..x.."_"..y
         local str = string.format(
-            "\nadd_label_with_icon_button|small|`0%s at `9(`2%d`9, `2%d`9)|left|1420|%s|\n",
-            name, x, y, buttonID
+            "\nadd_label_with_icon_button|small|`0%s at `9(`2%d`9, `2%d`9)|left|%d|%s|\n",
+            getItemByID(id).name, x, y, id, buttonID
         )
         table.insert(var, str)
     end
