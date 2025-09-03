@@ -7,7 +7,7 @@ bypass = {
 
 
 function main()
-Leaks = [[
+    Leaks = [[
 set_bg_color|10,10,10,225
 set_border_color|255,255,255,180
 set_default_color|`o
@@ -23,13 +23,13 @@ add_label_with_icon|small|`2[+] `c/Vault       `9->   `0Bypass Safe Vault|left|8
 add_label_with_icon|small|`2[+] `c/Mq          `9->   `0Take Mannequin Item|left|1420|
 add_label_with_icon|small|`2[+] `c/Db           `9->   `0Take Display Block|left|2946|
 add_label_with_icon|small|`2[+] `c/Ds            `9->   `0Take Display Shelf|left|3794|
+add_label_with_icon|small|`2[+] `c/Gaia         `9->   `0Item Sucker Seed|left|6946|
+add_label_with_icon|small|`2[+] `c/Ut            `9->   `0Item Sucker Block|left|6948|
 add_spacer|small|
 add_spacer|small|
 add_custom_button|kapa1|textLabel:`0                         Done                           ;middle_colour:200;border_colour:1000000000000;display:block;|
 ]]
 sendVariant({[0] = "OnDialogRequest", [1] = Leaks})
-
-
 
 -- ########### PATH MARKER / PATH ###########
 function marker(x, y, id)
@@ -45,7 +45,6 @@ function send(txt)
     sendVariant(var)
 end
 
--- Path Marker ID'leri (hem 1684, hem 4482)
 local pathMarkerIDs = {1684, 4482}
 
 function getPath()
@@ -115,7 +114,6 @@ AddHook("OnTextPacket", "warpHelper", function(_, pkt)
     end
 end)
 
-
 -- ########### MAGNET / MAGNET ###########
 local itemInfo = {}
 
@@ -151,7 +149,6 @@ function magnetHook(type, packet)
     end
 end
 AddHook("OnTextPacket","Hookied",magnetHook)
-
 
 -- ########### SAFEVAULT / VAULT ###########
 function addToStorage(x, y)
@@ -218,7 +215,6 @@ AddHook("OnTextPacket", "storageclick", function(_, pkt)
     end
 end)
 
-
 -- ########### DISPLAY BLOCK / Db ###########
 function addToDisplay(x, y)
     sendPacket(2,
@@ -283,7 +279,6 @@ AddHook("OnTextPacket", "displayclick", function(_, pkt)
         return true
     end
 end)
-
 
 -- ########### DISPLAY SHELF / Ds ###########
 local shelfIDs = {3794, 10190, 10552}
@@ -354,7 +349,6 @@ AddHook("OnTextPacket", "shelfclick", function(_, pkt)
     end
 end)
 
-
 -- ########### MANNEQUIN / Mq ###########
 local mannequinIDs = {1420, 6214, 10072, 10074, 10076, 10078, 13000, 15498}
 
@@ -424,6 +418,126 @@ AddHook("OnTextPacket", "manclick", function(_, pkt)
         runThread(function()
             sleep(500)
             clearMannequin(x, y)
+        end)
+        return true
+    end
+end)
+
+-- ########### GAIA / Item Sucker Seed ###########
+local gaiaID = 6946
+
+function getGaiaBlocks()
+    local f, world = {}, getWorld()
+    for x = 0, world.width -1 do
+        for y = 0, world.height -1 do
+            local tile = checkTile(x, y)
+            if tile and tile.fg == gaiaID then
+                tile.pos = { x = x, y = y }
+                table.insert(f, tile)
+            end
+        end
+    end
+
+    local var, name = {}, getItemByID(gaiaID).name
+    for _, tile in ipairs(f) do
+        local x, y = tile.pos.x, tile.pos.y
+        local buttonID = "gaia_"..x.."_"..y
+        local str = string.format(
+            "\nadd_label_with_icon_button|small|`0%s at `9(`2%d`9, `2%d`9)|left|%d|%s|\n",
+            name, x, y, gaiaID, buttonID
+        )
+        table.insert(var, str)
+    end
+    return table.concat(var)
+end
+
+function gaiaDialog()
+    return [[
+set_bg_color|10,10,10,225
+set_border_color|255,255,255,180
+add_label_with_icon|big|`0Gaia Menu|left|6946|
+add_spacer|small|
+add_smalltext|`2Click A Button To Collect Item|
+]] .. getGaiaBlocks() .. [[
+add_spacer|small|
+add_quick_exit|
+end_dialog|scangaia|Done||
+]]
+end
+
+AddHook("OnTextPacket","gaiaClick",function(_,pkt)
+    if pkt:find("/Gaia") or pkt:find("/gaia") then
+        sendVariant({ [0] = "OnDialogRequest", [1] = gaiaDialog() }, -1)
+        return true
+    end
+
+    local x, y = pkt:match("buttonClicked|gaia_(%d+)_(%d+)")
+    if x and y then
+        x, y = tonumber(x), tonumber(y)
+        logToConsole("Collecting Gaia at X:`2"..x.."`` Y:`2"..y)
+        runThread(function()
+            sleep(500)
+            sendPacket(2,"action|dialog_return\ndialog_name|itemsucker_seed\ntilex|"..x.."|\ntiley|"..y.."|\nbuttonClicked|retrieveitem\nchk_enablesucking|1")
+        end)
+        return true
+    end
+end)
+
+-- ########### UT / Item Sucker Block ###########
+local utID = 6948
+
+function getUTBlocks()
+    local f, world = {}, getWorld()
+    for x = 0, world.width -1 do
+        for y = 0, world.height -1 do
+            local tile = checkTile(x, y)
+            if tile and tile.fg == utID then
+                tile.pos = { x = x, y = y }
+                table.insert(f, tile)
+            end
+        end
+    end
+
+    local var, name = {}, getItemByID(utID).name
+    for _, tile in ipairs(f) do
+        local x, y = tile.pos.x, tile.pos.y
+        local buttonID = "ut_"..x.."_"..y
+        local str = string.format(
+            "\nadd_label_with_icon_button|small|`0%s at `9(`2%d`9, `2%d`9)|left|%d|%s|\n",
+            name, x, y, utID, buttonID
+        )
+        table.insert(var, str)
+    end
+    return table.concat(var)
+end
+
+function utDialog()
+    return [[
+set_bg_color|10,10,10,225
+set_border_color|255,255,255,180
+add_label_with_icon|big|`0UT Menu|left|6948|
+add_spacer|small|
+add_smalltext|`2Click A Button To Collect Item|
+]] .. getUTBlocks() .. [[
+add_spacer|small|
+add_quick_exit|
+end_dialog|scanut|Done||
+]]
+end
+
+AddHook("OnTextPacket","utClick",function(_,pkt)
+    if pkt:find("/Ut") or pkt:find("/ut") then
+        sendVariant({ [0] = "OnDialogRequest", [1] = utDialog() }, -1)
+        return true
+    end
+
+    local x, y = pkt:match("buttonClicked|ut_(%d+)_(%d+)")
+    if x and y then
+        x, y = tonumber(x), tonumber(y)
+        logToConsole("Collecting UT at X:`2"..x.."`` Y:`2"..y)
+        runThread(function()
+            sleep(500)
+            sendPacket(2,"action|dialog_return\ndialog_name|itemsucker_block\ntilex|"..x.."|\ntiley|"..y.."|\nbuttonClicked|retrieveitem\nchk_enablesucking|1")
         end)
         return true
     end
