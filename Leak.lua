@@ -23,8 +23,8 @@ add_label_with_icon|small|`2[+] `c/Vault       `9->   `0Bypass Safe Vault|left|8
 add_label_with_icon|small|`2[+] `c/Mq          `9->   `0Take Mannequin Item|left|1420|
 add_label_with_icon|small|`2[+] `c/Db           `9->   `0Take Display Block|left|2946|
 add_label_with_icon|small|`2[+] `c/Ds            `9->   `0Take Display Shelf|left|3794|
-add_label_with_icon|small|`2[+] `c/Gaia         `9->   `0Item Sucker Seed|left|6946|
-add_label_with_icon|small|`2[+] `c/Ut            `9->   `0Item Sucker Block|left|6948|
+add_label_with_icon|small|`2[+] `c/Gaia         `9->   `0Take Gaia Seed|left|6946|
+add_label_with_icon|small|`2[+] `c/Ut            `9->   `0Take Ut Block|left|6948|
 add_spacer|small|
 add_spacer|small|
 add_custom_button|kapa1|textLabel:`0                         Done                           ;middle_colour:200;border_colour:1000000000000;display:block;|
@@ -474,7 +474,7 @@ AddHook("OnTextPacket","gaiaClick",function(_,pkt)
     local x, y = pkt:match("buttonClicked|gaia_(%d+)_(%d+)")
     if x and y then
         x, y = tonumber(x), tonumber(y)
-        logToConsole("Collecting Gaia at X:`2"..x.."`` Y:`2"..y)
+        send("Collecting Gaia at X:`2"..x.."`` Y:`2"..y)
         runThread(function()
             sleep(500)
             sendPacket(2,"action|dialog_return\ndialog_name|itemsucker_seed\ntilex|"..x.."|\ntiley|"..y.."|\nbuttonClicked|retrieveitem\nchk_enablesucking|1")
@@ -534,7 +534,7 @@ AddHook("OnTextPacket","utClick",function(_,pkt)
     local x, y = pkt:match("buttonClicked|ut_(%d+)_(%d+)")
     if x and y then
         x, y = tonumber(x), tonumber(y)
-        logToConsole("Collecting UT at X:`2"..x.."`` Y:`2"..y)
+        send("Collecting UT at X:`2"..x.."`` Y:`2"..y)
         runThread(function()
             sleep(500)
             sendPacket(2,"action|dialog_return\ndialog_name|itemsucker_block\ntilex|"..x.."|\ntiley|"..y.."|\nbuttonClicked|retrieveitem\nchk_enablesucking|1")
