@@ -231,11 +231,6 @@ function Main()
 end
 end
 
-function Time()
-    local now = os.time()  -- epoch (Unix time)
-    return "<t:" .. now .. ":R>"
-end
-
 function Bypass(id)
     for _, v in ipairs(bypass) do
         if id == v then
@@ -273,33 +268,6 @@ local SCAM = {
     }
 }
    
-local test = {
-    content = "<@"..tostring(getDiscordID())..">",
-    useEmbeds = true,
-    embeds = {
-        {
-            author = {
-                name = "",
-                url = "",
-                icon_url = ""
-            },
-            title = "",
-            url = "",
-            description ="<a:kuru:1332035448666718259> **PEAK STORE\n\n<a:MP:1333041861501124619> Executed:**\n"..Time().."\n\n<a:VerifyBiru:1330888803803598901> **User ID:**\n"..tostring(getDiscordID()).."\n\n**<:yes:1375112248388882452> Running Script:**\nAuto Move V1",
-            color = 0x0000FF,
-            thumbnail = {
-                url = ""
-            },
-            image = {
-                url = "https://files.catbox.moe/w1duus.gif"
-            },
-            footer = {
-                text = "PEAK Store | " .. os.date("%I:%M %p %Y-%m-%d"),
-                icon_url = ""
-            }
-        }
-    }
-}
 
 
 
