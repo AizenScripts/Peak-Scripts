@@ -64,7 +64,7 @@ function fdrop()
         sleep(500)
         sendPacket(2, "action|dialog_return\ndialog_name|drop_item\nitemID|"..ItemId.."|\ncount|"..itemCount.."\n")
             if failed == true then
-        findPath(POSY, POSX)
+        findPath(POSX, POSY)
         fdrop()
         failed = false
             end
