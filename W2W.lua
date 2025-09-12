@@ -204,6 +204,7 @@ function Main()
         -- WorldDrop doğruysa devam eder
     end
 end
+    Main()
 end
 
 
