@@ -115,28 +115,6 @@ function a()
 
     local footer_text = "PEAK Store | " .. os.date("%I:%M %p %Y-%m-%d")
 
-    local content = [[{
-        "content": "]] .. (Ping or "") .. [[",
-        "embeds": [
-            {
-                "author": { "name": "PEAK:", "url": "", "icon_url": "" },
-                "title": "<:neptune:1391106470442962984> PEAK STORE",
-                "url": "",
-                "description": "**<:dirt:1391190051911897088> Block Amount : ]] .. totalAmount .. [[**\n]] .. Yazi .. [[",
-                "color": 255,
-                "thumbnail": { "url": "" },
-                "image": { "url": "https://files.catbox.moe/jmzrcm.gif" },
-                "footer": { "text": "]] .. footer_text .. [[", "icon_url": "" }
-            }
-        ]
-    }]]
-
-    function patchWebhook(url, msgID, content)
-        return makeRequest(url .. "/messages/" .. msgID, "PATCH", {["content-type"]="application/json"}, content).content
-    end
-
-    patchWebhook(url, messageID, content)
-end
 
 
 
