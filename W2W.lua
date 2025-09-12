@@ -63,6 +63,11 @@ function fdrop()
         sendPacket(2, "action|drop\n|itemID|"..ItemId.."\n")
         sleep(500)
         sendPacket(2, "action|dialog_return\ndialog_name|drop_item\nitemID|"..ItemId.."|\ncount|"..itemCount.."\n")
+            if failed == true then
+        findPath(POSY, POSX)
+        fdrop()
+        failed = false
+            end
     else
         logToConsole('Item Not Found (?)')
     end
@@ -85,13 +90,7 @@ end
 end
 end
 
-function fail()
-    if failed == true then
-        findPath(POSY, POSX)
-        fdrop()
-        failed = false
-    end
-end
+
 
 function checkP()
     sleep(WarpDelay)
@@ -150,14 +149,6 @@ function Main()
         sleep(FindPathDelay)
         fdrop()
         sleep(DropDelay)
-
-        if failed == true then
-            findPath(POSX, POSY)
-            sleep(FindPathDelay)
-            fdrop()
-            sleep(DropDelay)
-            failed = false
-        end
 
         send("`2Successfull!")
         send("`9Next Loop...")
