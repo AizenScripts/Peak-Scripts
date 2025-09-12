@@ -120,7 +120,6 @@ function Main()
             sleep(1300)
             send("`9Searching Item: `c" .. ItemId)
         if takeItem(ItemId) then
-            Yazi = "**<a:offline:1299896664445947965>"..ItemId.." Not Found\\n@everyone**"
             sleep(200)
             collect()
             send("`c"..ItemId.." `2Found")
