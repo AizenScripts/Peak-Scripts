@@ -103,20 +103,6 @@ end
 
 
 
-function a()
-    local totalAmount = 0
-    for _, item in pairs(getWorldObject()) do
-        if item.id == ItemId then
-            totalAmount = totalAmount + (item.amount or 0)
-        end
-    end
-
-    logToConsole("Block Amount: "..totalAmount.." | "..WorldTake)
-
-    local footer_text = "PEAK Store | " .. os.date("%I:%M %p %Y-%m-%d")
-
-
-
 
 
 function Main()
