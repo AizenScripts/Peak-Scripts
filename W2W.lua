@@ -14,20 +14,33 @@ function Time()
 end
 
 function main()
+-- ****************{Script By Peak Store}****************
+-- Config'ten gelen değerler GLOBAL kalacak
+-- Sakın başta local POSX/ POSY yapma!
+
 failed = false
 Yazi = ""
 
-AddHook("OnVarlist", "Hook",
-function(var)
-    if var[0] == "OnDialogRequest" then 
-        return true
+-- Drop başarısız olunca yakalayan hook
+AddHook("OnVarlist", "ChangeTilesToDrop", function(var)
+    if var[0]:find("OnTextOverlay") or var[0]:find("OnConsoleMessage") then
+        if var[1]:lower():find("can't drop") then
+            POSX = POSX - 1
+            failed = true
+            logToConsole("[DEBUG] Drop failed! Moving left. POSX = " .. POSX)
+        end
     end
 end)
+
+function Time()
+    local now = os.time() or 0
+    return "<t:" .. tostring(now) .. ":R>"
+end
 
 function send(txt)
     local var = {}
     var[0] = "OnTextOverlay"
-    var[1] = "`9[`cPEAK`9]``" .. txt
+    var[1] = "`9[`cPEAK`9]`` " .. txt
     sendVariant(var)
 end
 
@@ -35,21 +48,12 @@ function join(World, id)
     sendPacket(3, "action|join_request\nname|" .. World .. "|" .. id .. "\ninvitedWorld|0")
 end
 
-AddHook("OnVarlist", "ChangeTilesToDrop", function(var)
-    if var[0]:find("OnTextOverlay") then
-        if var[1]:find("can't drop that") then
-             POSX = POSX - 1
-             failed = true
-        end
-    end
-end)
-
 function takeItem(itemID)
     for _, obj in pairs(getWorldObject()) do
         if obj.id == itemID then
-            findPath(math.floor(obj.pos.x / 32), math.floor(obj.pos.y / 32)) -- Go to the item
+            findPath(math.floor(obj.pos.x / 32), math.floor(obj.pos.y / 32))
             sleep(FindPathDelay)
-            sendPacket(4, "action|collect\n") 
+            sendPacket(4, "action|collect\n")
             sleep(500)
             return true
         end
@@ -63,17 +67,18 @@ function fdrop()
         sendPacket(2, "action|drop\n|itemID|"..ItemId.."\n")
         sleep(500)
         sendPacket(2, "action|dialog_return\ndialog_name|drop_item\nitemID|"..ItemId.."|\ncount|"..itemCount.."\n")
-            if failed == true then
-        findPath(POSX, POSY)
-        fdrop()
-        failed = false
-            end
+        if failed == true then
+            findPath(POSX, POSY) -- Config'ten gelen doğru X,Y
+            failed = false
+            sleep(300)
+            fdrop() -- Tekrar dene
+        end
     else
-        logToConsole('Item Not Found (?)')
+        logToConsole("Item Not Found (?)")
     end
 end
 
-function getItemCount(itm) 
+function getItemCount(itm)
     for _, item in pairs(getInventory()) do
         if item.id == itm then
             return item.amount
@@ -83,14 +88,12 @@ function getItemCount(itm)
 end
 
 function collect()
-for _, obj in pairs(getWorldObject()) do
-if math.abs(getLocal().pos.x - obj.pos.x) < 40 and math.abs(getLocal().pos.y - obj.pos.y) < 40 then
-sendPacketRaw(false, {cx = obj.pos.x, cy = obj.pos.y, value = obj.oid, type = 11})
+    for _, obj in pairs(getWorldObject()) do
+        if math.abs(getLocal().pos.x - obj.pos.x) < 40 and math.abs(getLocal().pos.y - obj.pos.y) < 40 then
+            sendPacketRaw(false, {cx = obj.pos.x, cy = obj.pos.y, value = obj.oid, type = 11})
+        end
+    end
 end
-end
-end
-
-
 
 function checkP()
     sleep(WarpDelay)
@@ -99,10 +102,6 @@ end
 function checkP2()
     sleep(WarpDelay)
 end
-
-
-
-
 
 function Main()
     while true do
@@ -115,49 +114,43 @@ function Main()
         if getWorld().name ~= WorldTake then
             checkP()
             return
-            else
+        else
             sleep(1300)
             send("`9Searching Item: `c" .. ItemId)
-        if takeItem(ItemId) then
-            sleep(200)
-            collect()
-            send("`c"..ItemId.." `2Found")
-            
-        else
-            
-            send("`4"..ItemId.." Not Found")
-            
-            return 
-        end
+            if takeItem(ItemId) then
+                sleep(200)
+                collect()
+                send("`c"..ItemId.." `2Found")
+            else
+                send("`4"..ItemId.." Not Found")
+                return
+            end
 
-        send("`9Warping `2WorldDrop")
-        sleep(500)
-        join(WorldDrop, DoorId1)
-        send("`2Script By `9Aizen")
-        checkP2()
+            send("`9Warping `2WorldDrop")
+            sleep(500)
+            join(WorldDrop, DoorId1)
+            send("`2Script By `9Aizen")
+            checkP2()
         end
-        -- WorldTake doğruysa devam eder
-
-        
 
         if getWorld().name ~= WorldDrop then
             checkP2()
             return
-            else
+        else
             send("`9Dropping Item")
-        findPath(POSX, POSY)
-        sleep(FindPathDelay)
-        fdrop()
-        sleep(DropDelay)
+            findPath(POSX, POSY)
+            sleep(FindPathDelay)
+            fdrop()
+            sleep(DropDelay)
 
-        send("`2Successfull!")
-        send("`9Next Loop...")
-        sleep(LoopDelay)
+            send("`2Successfull!")
+            send("`9Next Loop...")
+            sleep(LoopDelay)
         end
-        -- WorldDrop doğruysa devam eder
     end
 end
-    Main()
+
+Main()
 end
 
 
