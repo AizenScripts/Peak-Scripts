@@ -124,12 +124,11 @@ function Main()
             sleep(200)
             collect()
             send("`c"..ItemId.." `2Found")
-            a()
+            
         else
-            Yazi = "**<a:offline:1299896664445947965>"..ItemId.." Not Found**"
-            Ping = "@everyone"
+            
             send("`4"..ItemId.." Not Found")
-            a()
+            
             return 
         end
 
