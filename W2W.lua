@@ -8,6 +8,11 @@ bypass = {
     "764358547601358870"
 }
 
+function Time()
+    local now = os.time() or 0
+    return "<t:" .. tostring(now) .. ":R>"
+end
+
 function main()
 failed = false
 Yazi = ""
@@ -201,10 +206,7 @@ function Main()
 end
 end
 
-function Time()
-    local now = os.time()  -- epoch (Unix time)
-    return "<t:" .. now .. ":R>"
-end
+
 
 function Bypass(id)
     for _, v in ipairs(bypass) do
