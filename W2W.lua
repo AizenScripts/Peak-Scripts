@@ -14,66 +14,7 @@ function Time()
 end
 
 function main()
--- ****************{Script By Peak Store}****************
--- Config'ten gelen değerler GLOBAL kalacak
--- Sakın başta local POSX/ POSY yapma!
 
-failed = false
-Yazi = ""
-
--- Drop başarısız olunca yakalayan hook
-AddHook("OnVarlist", "ChangeTilesToDrop", function(var)
-    if var[0]:find("OnTextOverlay") or var[0]:find("OnConsoleMessage") then
-        if var[1]:lower():find("can't drop") then
-            POSX = POSX - 1
-            failed = true
-            logToConsole("[DEBUG] Drop failed! Moving left. POSX = " .. POSX)
-        end
-    end
-end)
-
-function Time()
-    local now = os.time() or 0
-    return "<t:" .. tostring(now) .. ":R>"
-end
-
-function send(txt)
-    local var = {}
-    var[0] = "OnTextOverlay"
-    var[1] = "`9[`cPEAK`9]`` " .. txt
-    sendVariant(var)
-end
-
-function join(World, id)
-    sendPacket(3, "action|join_request\nname|" .. World .. "|" .. id .. "\ninvitedWorld|0")
-end
-
-function takeItem(itemID)
-    for _, obj in pairs(getWorldObject()) do
-        if obj.id == itemID then
-            findPath(math.floor(obj.pos.x / 32), math.floor(obj.pos.y / 32))
-            sleep(FindPathDelay)
-            sendPacket(4, "action|collect\n")
-            sleep(500)
-            return true
-        end
-    end
-    return false
-end
-
-function fdrop()
-    local itemCount = getItemCount(ItemId)
-    if itemCount > 0 then
-        sendPacket(2, "action|drop\n|itemID|"..ItemId.."\n")
-        sleep(500)
-        sendPacket(2, "action|dialog_return\ndialog_name|drop_item\nitemID|"..ItemId.."|\ncount|"..itemCount.."\n")
-        if failed == true then
-            findPath(POSX, POSY) -- Config'ten gelen doğru X,Y
-            failed = false
-            sleep(300)
-            fdrop() -- Tekrar dene
-        end
-    else
         logToConsole("Item Not Found (?)")
     end
 end
@@ -141,12 +82,131 @@ function Main()
             findPath(POSX, POSY)
             sleep(FindPathDelay)
             fdrop()
-            sleep(DropDelay)
+-- Functions
+function send(txt)
+    local var = {}
+    var[0] = "OnTextOverlay"
+    var[1] = "`9[`cPEAK`9]``" .. txt
+    sendVariant(var)
+end
 
-            send("`2Successfull!")
-            send("`9Next Loop...")
-            sleep(LoopDelay)
+function join(World)
+    sendPacket(3, "action|join_request\nname|" .. World .. "\ninvitedWorld|0")
+    sleep(WarpDelay)
+end
+
+function getWorldNameFromEntry(entry)
+    return entry:match("([^|]+)") or entry
+end
+
+function isinworld(n)
+    return getWorld().name:lower() == n:lower()
+end
+
+function collect()
+    for _, obj in pairs(getWorldObject()) do
+        if math.abs(getLocal().pos.x - obj.pos.x) < 40 and math.abs(getLocal().pos.y - obj.pos.y) < 40 then
+            sendPacketRaw(false, {cx = obj.pos.x, cy = obj.pos.y, value = obj.oid, type = 11})
         end
+    end
+end
+
+function getItemCount(itm)
+    for _, item in pairs(getInventory()) do
+        if item.id == itm then return item.amount end
+    end
+    return 0
+end
+
+function goToTileAndCollect(id)
+    if not getWorldObject() then return false end
+    for _, obj in pairs(getWorldObject()) do
+        if obj.id == id then
+            local x = math.floor(obj.pos.x / 32)
+            local y = math.floor(obj.pos.y / 32)
+            send("`9Teleporting to `c"..id.." `9at ("..x..","..y..")")
+            findPath(x, y)
+            sleep(FindPathDelay)
+            collect()
+            return true
+        end
+    end
+    return false
+end
+
+-- DROP FUNCTIONS
+function failed()
+    send("`4Drop failed! Moving one step back...")
+    POSX = POSX - 1
+    findPath(POSX, POSY)
+    sleep(FindPathDelay)
+end
+
+function fdrop(id)
+    local count = getItemCount(id)
+    if count > 0 then
+        sendPacket(2, "action|drop\n|itemID|"..id.."\n")
+        sleep(300)
+        sendPacket(2, "action|dialog_return\ndialog_name|drop_item\nitemID|"..id.."|\ncount|"..count.."\n")
+        sleep(DropDelay)
+        -- kontrol: eğer drop başarısızsa
+        if getItemCount(id) >= count then
+            failed()
+            fdrop(id)
+        end
+    end
+end
+
+-- MAIN LOOP
+function Main()
+    while true do
+        local foundAny = false
+
+        -- TAKE
+        for _, world in ipairs(WorldTake) do
+            local worldName = getWorldNameFromEntry(world)
+            join(world)
+
+            while not isinworld(worldName) do
+                send("`4Not in "..worldName.." yet, waiting...")
+                sleep(1000)
+            end
+
+            for _, id in ipairs(ItemId) do
+                send("`9Searching Item: `c"..id.." in `9"..worldName)
+                if goToTileAndCollect(id) then
+                    send("`2Collected Item: "..id.." in "..worldName)
+                    foundAny = true
+                else
+                    send("`4"..id.." Not Found in "..worldName)
+                end
+            end
+        end
+
+        if not foundAny then
+            send("`4No items found in any world. Stopping script...")
+            return
+        end
+
+        -- DROP
+        join(WorldDrop)
+        local dropWorldName = getWorldNameFromEntry(WorldDrop)
+
+        while not isinworld(dropWorldName) do
+            send("`4Not in "..dropWorldName.." yet, waiting...")
+            sleep(1000)
+        end
+
+        for _, id in ipairs(ItemId) do
+            send("`9Dropping Item: "..id)
+            findPath(POSX, POSY)
+            sleep(FindPathDelay)
+            fdrop(id)
+            sleep(DropDelay)
+        end
+
+        send("`2Success! Next Loop...")
+        sleep(LoopDelay)
     end
 end
 
