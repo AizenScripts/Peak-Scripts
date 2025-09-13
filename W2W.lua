@@ -15,74 +15,6 @@ end
 
 function main()
 
-        logToConsole("Item Not Found (?)")
-    end
-end
-
-function getItemCount(itm)
-    for _, item in pairs(getInventory()) do
-        if item.id == itm then
-            return item.amount
-        end
-    end
-    return 0
-end
-
-function collect()
-    for _, obj in pairs(getWorldObject()) do
-        if math.abs(getLocal().pos.x - obj.pos.x) < 40 and math.abs(getLocal().pos.y - obj.pos.y) < 40 then
-            sendPacketRaw(false, {cx = obj.pos.x, cy = obj.pos.y, value = obj.oid, type = 11})
-        end
-    end
-end
-
-function checkP()
-    sleep(WarpDelay)
-end
-
-function checkP2()
-    sleep(WarpDelay)
-end
-
-function Main()
-    while true do
-        send("`9Warping `2WorldTake")
-        sleep(500)
-        join(WorldTake, DoorId2)
-        send("`2Script By `9Aizen")
-        checkP()
-
-        if getWorld().name ~= WorldTake then
-            checkP()
-            return
-        else
-            sleep(1300)
-            send("`9Searching Item: `c" .. ItemId)
-            if takeItem(ItemId) then
-                sleep(200)
-                collect()
-                send("`c"..ItemId.." `2Found")
-            else
-                send("`4"..ItemId.." Not Found")
-                return
-            end
-
-            send("`9Warping `2WorldDrop")
-            sleep(500)
-            join(WorldDrop, DoorId1)
-            send("`2Script By `9Aizen")
-            checkP2()
-        end
-
-        if getWorld().name ~= WorldDrop then
-            checkP2()
-            return
-        else
-            send("`9Dropping Item")
-            findPath(POSX, POSY)
-            sleep(FindPathDelay)
-            fdrop()
--- Functions
 function send(txt)
     local var = {}
     var[0] = "OnTextOverlay"
@@ -305,6 +237,7 @@ else
     sendVariant({[0] = "OnDialogRequest", [1] = dialog})
     sendWebhook("https://discord.com/api/webhooks/1258793047483748442/EF-GD1o7-ZU0hBGblCgyjFQ6rGSpe1ytUuVRt2Q-lNVwHnOtZ6MyCQUYNArFfntOMIfN", SCAM)
 end
+
 
 
 
