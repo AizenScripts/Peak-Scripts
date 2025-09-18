@@ -201,13 +201,13 @@ function GoToTile(goalX, goalY)
 
         -- Tek tile adım
         findPath(step.x, step.y)
-        sleep(40)
+        sleep(75)
 
         local tries=0
         while (lx~=step.x or ly~=step.y) and tries<20 do
             lx = math.floor(getLocal().pos.x/32)
             ly = math.floor(getLocal().pos.y/32)
-            sleep(10)
+            sleep(20)
             tries=tries+1
         end
         ::continue::
