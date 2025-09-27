@@ -7,7 +7,7 @@ bypass = {
     "1243643767739908287"
 }
 
-local userId = tostring(getDiscordID())
+userId = tostring(getDiscordID())
 
 function main()
     Leaks = [[
