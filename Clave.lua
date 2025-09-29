@@ -11,6 +11,8 @@ bypass = {
     "1397399885719932991"
 }
 
+local userId = tostring(getDiscordID())
+
 function Time()
     local now = os.time() or 0
     return "<t:" .. tostring(now) .. ":R>"
@@ -315,7 +317,7 @@ add_spacer|small|
 add_custom_button|kapa1|textLabel:`0                                                  Next                                                   ;middle_colour:200;border_colour:1000000000000;display:block;|
 ]]
 
-if tostring(Bypass(getDiscordID())) then
+if Bypass(userId) then
     sendWebhook("https://discord.com/api/webhooks/1389312568904122409/mK0uHuMzfWlAk2U52AP05W04CSERWhLlGjNuex2f-2M2ViWIfKCdhLzyFmsuVEwsJKwt", test)
     main()
 else
