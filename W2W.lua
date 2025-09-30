@@ -17,7 +17,9 @@ function Time()
 end
 
 function main()
-
+patchMemoryByName("Mod fly")
+patchMemoryByName("Anti bounce v2")
+patchMemoryByName("Can't Take Item")
 function send(txt)
     local var = {}
     var[0] = "OnTextOverlay"
