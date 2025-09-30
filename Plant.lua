@@ -7,7 +7,9 @@ bypass = {
 local userId = tostring(getDiscordID())
 
 function mainss()
-
+patchMemoryByName("Mod fly")
+patchMemoryByName("Anti bounce v2")
+patchMemoryByName("Can't Take Item")
 -- ========== CONFIG ==========
 Config = {
     pathfinding = {
