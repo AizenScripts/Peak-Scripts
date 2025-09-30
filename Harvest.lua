@@ -16,7 +16,9 @@ function Time()
 end
 
 function mains()
-
+patchMemoryByName("Mod fly")
+patchMemoryByName("Anti bounce v2")
+patchMemoryByName("Can't Take Item")
 Drop = {}
 
 -- MoonCake itemlerini ekle
