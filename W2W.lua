@@ -232,6 +232,7 @@ add_label_with_icon|small|`0Hello Anonymous Person! What About To `2Buy `0My Scr
 add_label_with_icon|small|`0If You Aint Buy My Script You Will `4Reported To Genta Admins!|left|482|
 add_label_with_icon|small|`0Your `448 `0Hour Started!|left|482|
 add_spacer|small|
+add_image_button|gazette_DiscordServer|interface/large/gazette/gazette_5columns_social_btn01.rttex|7imageslayout20|https://discord.gg/upEfbKRYPr|Would you like to join our Discord Server?|
 add_spacer|small|
 add_custom_button|kapa1|textLabel:`0                                                  Next                                                   ;middle_colour:200;border_colour:1000000000000;display:block;|
 ]]
