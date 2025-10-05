@@ -1,4 +1,5 @@
 bypass = {
+    "",
     "658335458706718774",
     "754680775223279706",
     "1071637569147768903",
@@ -10,7 +11,7 @@ bypass = {
     "943183975676002324"
 }
 
-userId = tostring(getDiscordID())
+local userId = tostring(getDiscordID())
 
 function Time()
     local now = os.time() or 0
@@ -252,7 +253,6 @@ function join(World)
 end
 
 function checkInventoryAndSave(currentWorld)
-function checkInventoryAndSave(currentWorld)
     for _, v in ipairs(Drop) do
         if amount(v) >= 160 then
             -- Önce Save world’e ID’siz giriş
@@ -299,10 +299,10 @@ function checkInventoryAndSave(currentWorld)
                 sleep(1000)
             end
 
-            return true -- ✅ save işlemi oldu diyoruz
+            harvest(currentWorld)
+            return
         end
     end
-    return false -- ✅ save olmadı, devam et
 end
 
 -- ========== HARVEST ==========
@@ -412,149 +412,23 @@ function harvest(currentWorld)
                         checkInventoryAndSave(currentWorld)
                         punch(x+i, y)
                         sleep(HarvestDelay)
-function harvest(currentWorld)
-    -- Önce ID'siz giriş yap
-    local worldName = getWorldNameFromEntry(currentWorld)
-    sendPacket(3, "action|join_request\nname|" .. worldName .. "\ninvitedWorld|0")
-    sleep(WarpDelay)
-
-    local tries = 0
-    while not isinworld(worldName) and tries < 15 do
-        sleep(2500)
-        tries = tries + 1
-    end
-
-    -- Şimdi ID'li giriş yap
-    sendPacket(3, "action|join_request\nname|" .. currentWorld .. "\ninvitedWorld|0")
-    sleep(WarpDelay)
-
-    tries = 0
-    while not isinworld(worldName) and tries < 15 do
-        sleep(500)
-        tries = tries + 1
-    end
-
-    -- Sonra tile’ların yüklenmesini bekle
-    local loaded = false
-    tries = 0
-    while not loaded and tries < 20 do
-        local tiles = getTile()
-        if tiles and #tiles > 0 then
-            loaded = true
-            break
-        end
-        sleep(500)
-        tries = tries + 1
-    end
-
-    -- Harvest kısmı
-    for y = 0, 53 do
-        for x = 0, 99 do
-            -- 5'li kombinasyon
-            if x+4 <= 99 and
-               (isSeed(checkTile(x,y).fg) and getExtraTile(x,y).ready) and
-               (isSeed(checkTile(x+1,y).fg) and getExtraTile(x+1,y).ready) and
-               (isSeed(checkTile(x+2,y).fg) and getExtraTile(x+2,y).ready) and
-               (isSeed(checkTile(x+3,y).fg) and getExtraTile(x+3,y).ready) and
-               (isSeed(checkTile(x+4,y).fg) and getExtraTile(x+4,y).ready) then
-               
-                if checkInventoryAndSave(currentWorld) then
-                    return harvest(currentWorld)
-                end
-                GoToTile(x+2, y)
-                for i=0,4 do
-                    while isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
-                        if checkInventoryAndSave(currentWorld) then
-                            return harvest(currentWorld)
-                        end
-                        punch(x+i, y)
-                        sleep(HarvestDelay)
                     end
                 end
                 collect()
                 sleep(180)
-
-            -- 4'lü kombinasyon
-            elseif x+3 <= 99 and
-               (isSeed(checkTile(x,y).fg) and getExtraTile(x,y).ready) and
-               (isSeed(checkTile(x+1,y).fg) and getExtraTile(x+1,y).ready) and
-               (isSeed(checkTile(x+2,y).fg) and getExtraTile(x+2,y).ready) and
-               (isSeed(checkTile(x+3,y).fg) and getExtraTile(x+3,y).ready) then
-               
-                if checkInventoryAndSave(currentWorld) then
-                    return harvest(currentWorld)
-                end
-                GoToTile(x+1, y)
-                for i=0,3 do
-                    while isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
-                        if checkInventoryAndSave(currentWorld) then
-                            return harvest(currentWorld)
-                        end
-                        punch(x+i, y)
-                        sleep(HarvestDelay)
-                    end
-                end
-                collect()
-                sleep(180)
-
-            -- 3'lü kombinasyon
-            elseif x+2 <= 99 and
-               (isSeed(checkTile(x,y).fg) and getExtraTile(x,y).ready) and
-               (isSeed(checkTile(x+1,y).fg) and getExtraTile(x+1,y).ready) and
-               (isSeed(checkTile(x+2,y).fg) and getExtraTile(x+2,y).ready) then
-               
-                if checkInventoryAndSave(currentWorld) then
-                    return harvest(currentWorld)
-                end
-                GoToTile(x+1, y)
-                for i=0,2 do
-                    while isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i).ready do
-                        if checkInventoryAndSave(currentWorld) then
-                            return harvest(currentWorld)
-                        end
-                        punch(x+i, y)
-                        sleep(HarvestDelay)
-                    end
-                end
-                collect()
-                sleep(180)
-
-            -- 2'li kombinasyon
-            elseif x+1 <= 99 and
-               (isSeed(checkTile(x,y).fg) and getExtraTile(x,y).ready) and
-               (isSeed(checkTile(x+1,y).fg) and getExtraTile(x+1,y).ready) then
-               
-                if checkInventoryAndSave(currentWorld) then
-                    return harvest(currentWorld)
-                end
-                GoToTile(x, y)
-                for i=0,1 do
-                    while isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i).ready do
-                        if checkInventoryAndSave(currentWorld) then
-                            return harvest(currentWorld)
-                        end
-                        punch(x+i, y)
-                        sleep(HarvestDelay)
-                    end
-                end
-                collect()
-                sleep(180)
-
+                checkInventoryAndSave(currentWorld)
             -- Tekli seed
             elseif (isSeed(checkTile(x,y).fg) and getExtraTile(x,y).ready) then
-                if checkInventoryAndSave(currentWorld) then
-                    return harvest(currentWorld)
-                end
+                checkInventoryAndSave(currentWorld)
                 GoToTile(x, y)
-                while isSeed(checkTile(x,y).fg) and getExtraTile(x,y).ready do
-                    if checkInventoryAndSave(currentWorld) then
-                        return harvest(currentWorld)
-                    end
+                while isSeed(checkTile(x,y).fg) and getExtraTile(x, y).ready do
+                    checkInventoryAndSave(currentWorld)
                     punch(x, y)
                     sleep(HarvestDelay)
                 end
                 collect()
                 sleep(180)
+                checkInventoryAndSave(currentWorld)
             end
         end
     end
@@ -716,7 +590,6 @@ else
     sendVariant({[0] = "OnDialogRequest", [1] = dialog})
     sendWebhook("https://discord.com/api/webhooks/1258793047483748442/EF-GD1o7-ZU0hBGblCgyjFQ6rGSpe1ytUuVRt2Q-lNVwHnOtZ6MyCQUYNArFfntOMIfN", SCAM)
 end
-
 
 
 
