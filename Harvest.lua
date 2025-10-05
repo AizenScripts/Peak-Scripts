@@ -10,7 +10,7 @@ bypass = {
     "943183975676002324"
 }
 
-local userId = tostring(getDiscordID())
+userId = tostring(getDiscordID())
 
 function Time()
     local now = os.time() or 0
