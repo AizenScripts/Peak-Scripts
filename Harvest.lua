@@ -299,7 +299,7 @@ function checkInventoryAndSave(currentWorld)
                 sleep(1000)
             end
 
-            -- return → harvest kaldığı yerden devam edecek
+            harvest(currentWorld) → harvest kaldığı yerden devam edecek
             return
         end
     end
