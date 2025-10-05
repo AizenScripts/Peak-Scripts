@@ -22,22 +22,19 @@ function mains()
 patchMemoryByName("Mod fly")
 patchMemoryByName("Anti bounce v2")
 patchMemoryByName("Can't Take Item")
-Drop = {}
+        
+            Drop = {}
+currentWorld = nil
 
 -- MoonCake itemlerini ekle
-if collectMoonCake == true then
-    table.insert(Drop, 1058)
-    table.insert(Drop, 1094)
-    table.insert(Drop, 1096)
-    table.insert(Drop, 1098)
-    table.insert(Drop, 1828)
-    table.insert(Drop, 7058)
+if collectMoonCake then
+    for _, id in ipairs({1058, 1094, 1096, 1098, 1828, 7058}) do
+        table.insert(Drop, id)
+    end
 end
 
 -- Gem ekle
-if collectGem == true then
-    table.insert(Drop, 112)
-end
+if collectGem then table.insert(Drop, 112) end
 
 -- Seed ve Seed-1 ekle
 for _, id in ipairs(SeedID) do
@@ -45,7 +42,7 @@ for _, id in ipairs(SeedID) do
     table.insert(Drop, id - 1)
 end
 
--- ayarlar
+-- Pathfinding ayarları
 Config = {
     pathfinding = {
         width = 100,
@@ -53,22 +50,21 @@ Config = {
         detourFactor = 3,
         forcedPenalty = 15,
         avoided_blocks = {
-            [6] = true,   -- bedrock
-            [8] = true,   -- lava
-            [376] = true, -- spike
+            [6] = true,
+            [8] = true,
+            [376] = true
         }
     }
 }
 
--- Yardımcı: yönleri üret (1..maxStep tile uzaklığa kadar)
+-- Yardımcı: yönler (1 tile)
 local function generateDirs(maxStep)
     local dirs = {}
     for step=1,maxStep do
         for dx=-step,step do
             for dy=-step,step do
                 if not (dx==0 and dy==0) and math.max(math.abs(dx),math.abs(dy))==step then
-                    local cost = math.sqrt(dx*dx+dy*dy)
-                    table.insert(dirs,{dx,dy,cost})
+                    table.insert(dirs,{dx,dy,math.sqrt(dx*dx+dy*dy)})
                 end
             end
         end
@@ -76,15 +72,13 @@ local function generateDirs(maxStep)
     return dirs
 end
 
--- sadece 1 tile uzaklığa kadar yönler
 local dirs = generateDirs(1)
 
--- A* Pathfinding
+-- ========== PATHFINDING ==========
 function FindPath(goalX, goalY)
-    tiles = getTile()
+    local tiles = getTile()
     local startX = getLocal().pos.x // 32
     local startY = getLocal().pos.y // 32
-
     local width, height = Config.pathfinding.width, Config.pathfinding.height
 
     local function tileIndex(x, y) return y * width + x end
@@ -92,21 +86,15 @@ function FindPath(goalX, goalY)
         local idx = tileIndex(x, y)
         return tiles[idx] or tiles[idx+1]
     end
-
-    local function heuristic(x1, y1, x2, y2)
-        local dx, dy = math.abs(x1 - x2), math.abs(y1 - y2)
-        return math.max(dx, dy)
-    end
+    local function heuristic(x1,y1,x2,y2) return math.max(math.abs(x1-x2), math.abs(y1-y2)) end
 
     local function aStar(allowForceCollidable)
         local openSet, cameFrom, gScore, fScore, inOpenSet = {}, {}, {}, {}, {}
         local function pushOpen(x,y) table.insert(openSet,{x=x,y=y}); inOpenSet[x..","..y]=true end
         local function popLowestF()
-            local best = 1
+            local best=1
             for i=2,#openSet do
-                if fScore[openSet[i].x..","..openSet[i].y] < fScore[openSet[best].x..","..openSet[best].y] then
-                    best=i
-                end
+                if fScore[openSet[i].x..","..openSet[i].y] < fScore[openSet[best].x..","..openSet[best].y] then best=i end
             end
             local node=openSet[best]
             table.remove(openSet,best)
@@ -122,12 +110,11 @@ function FindPath(goalX, goalY)
             return total
         end
 
-        local startKey=startX..","..startY
+        local startKey = startX..","..startY
         gScore[startKey]=0
         fScore[startKey]=heuristic(startX,startY,goalX,goalY)
         pushOpen(startX,startY)
-
-        local forcedPenalty=Config.pathfinding.forcedPenalty
+        local forcedPenalty = Config.pathfinding.forcedPenalty
         local forcedUsed=false
 
         while #openSet>0 do
@@ -149,11 +136,11 @@ function FindPath(goalX, goalY)
                             if (not passable) and allowForceCollidable then forced=true end
 
                             if math.abs(d[1])>0 and math.abs(d[2])>0 then
-                                local stepX = d[1] / math.abs(d[1])
-                                local stepY = d[2] / math.abs(d[2])
+                                local stepX=d[1]/math.abs(d[1])
+                                local stepY=d[2]/math.abs(d[2])
                                 for i=1,math.max(math.abs(d[1]), math.abs(d[2])) do
-                                    local side1 = getTileAt(current.x + stepX*i, current.y)
-                                    local side2 = getTileAt(current.x, current.y + stepY*i)
+                                    local side1=getTileAt(current.x + stepX*i, current.y)
+                                    local side2=getTileAt(current.x, current.y + stepY*i)
                                     if (side1 and side1.isCollideable) and (side2 and side2.isCollideable) then
                                         goto continue
                                     end
@@ -162,13 +149,8 @@ function FindPath(goalX, goalY)
 
                             if passable or forced then
                                 local cost=d[3] or 1
-                                if fg~=0 and not passable then
-                                    cost=cost+5
-                                end
-                                if forced then
-                                    cost=cost+forcedPenalty
-                                    forcedUsed=true
-                                end
+                                if fg~=0 and not passable then cost=cost+5 end
+                                if forced then cost=cost+forcedPenalty; forcedUsed=true end
                                 local nKey=nx..","..ny
                                 local tentative=(gScore[currentKey] or 1e9)+cost
                                 if not gScore[nKey] or tentative<gScore[nKey] then
@@ -196,23 +178,15 @@ function FindPath(goalX, goalY)
     return path,forced
 end
 
--- Hareket: Hedefe git (kırmadan)
 function GoToTile(goalX, goalY)
     local path, forced = FindPath(goalX, goalY)
-    if not path then
-        log("`4[YOL] Bulunamadı -> ("..goalX..","..goalY..")")
-        return false
-    end
-
+    if not path then log("`4[YOL] Bulunamadı -> ("..goalX..","..goalY..")"); return false end
     for _, step in ipairs(path) do
         local lx = math.floor(getLocal().pos.x/32)
         local ly = math.floor(getLocal().pos.y/32)
         if lx==step.x and ly==step.y then goto continue end
-
-        -- Tek tile adım
         findPath(step.x, step.y)
-        sleep(75)
-
+        sleep(50)
         local tries=0
         while (lx~=step.x or ly~=step.y) and tries<20 do
             lx = math.floor(getLocal().pos.x/32)
@@ -222,7 +196,6 @@ function GoToTile(goalX, goalY)
         end
         ::continue::
     end
-
     return true
 end
 
@@ -231,15 +204,26 @@ function getWorldNameFromEntry(entry) return entry:match("([^|]+)") or entry end
 function isinworld(n) return getWorld().name:lower() == n:lower() end
 function isDrop(id) for _, v in ipairs(Drop) do if v == id then return true end end return false end
 function isSeed(id) for _, v in ipairs(SeedID) do if v == id then return true end end return false end
-function collect() for _, obj in pairs(getWorldObject()) do if math.abs(getLocal().pos.x - obj.pos.x) < 120 and math.abs(getLocal().pos.y - obj.pos.y) < 120 and isDrop(obj.id) then sendPacketRaw(false, {cx = obj.pos.x, cy = obj.pos.y, value = obj.oid, type = 11}) end end end
+function collect()
+    for _, obj in pairs(getWorldObject()) do
+        if math.abs(getLocal().pos.x - obj.pos.x) < 120 and math.abs(getLocal().pos.y - obj.pos.y) < 120 and isDrop(obj.id) then
+            sendPacketRaw(false, {cx = obj.pos.x, cy = obj.pos.y, value = obj.oid, type = 11})
+        end
+    end
+end
 function punch(x, y) requestTileChange(x, y, 18) end
 function amount(itm) for _, item in pairs(getInventory()) do if item.id == itm then return item.amount end end return 0 end
-function failed() POSX = POSX - 1 GoToTile(POSX, POSY) sleep(1000) end
+function failed()
+ POSX = POSX - 1
+ GoToTile(POSX, POSY)
+ sleep(1000)
+ DropAll()
+end
 function fdrop(id)
     local count = amount(id)
     if count > 0 then
         local tries = 0
-        local maxTries = 8
+        local maxTries = 3
         while amount(id) >= count and tries < maxTries do
             sendPacket(2, "action|drop\n|itemID|"..id.."\n")
             sleep(300)
@@ -247,46 +231,104 @@ function fdrop(id)
             sleep(DropDelay)
             tries = tries + 1
         end
-        if amount(id) >= count then
-            failed()
-        end
+        if amount(id) >= count then failed() end
     end
 end
 function DropAll() for _, v in ipairs(Drop) do if amount(v) > 0 then fdrop(v) sleep(400) end end end
 
--- ========== HARVEST ==========
-function countSeeds()
-    local count = 0
-    for y = 0, 53 do
-        for x = 0, 99 do
-            if isSeed(checkTile(x,y).fg) then
-                count = count + 1
-            end
-        end
-    end
-    return count
-end
-
-function checkRemain()
-    local currentCount = countSeeds()
-    if currentCount == 0 then
-        doToast(4, 2000, "DONE")
-    else
-        doToast(4, 2000, "REMAIN (" .. currentCount .. " Seeds Detected)")
-    end
-end
-
+-- ========== SAVE LOGIC DURING HARVEST ==========
 function join(World)
     local worldName = getWorldNameFromEntry(World)
     sendPacket(3, "action|join_request\nname|" .. World .. "\ninvitedWorld|0")
     sleep(WarpDelay)
+    local tries = 0
+    while not isinworld(worldName) and tries < 15 do sleep(2500); tries=tries+1 end
+    local loaded=false; tries=0
+    while not loaded and tries<20 do
+        local tiles = getTile()
+        if tiles and #tiles>0 then loaded=true; break end
+        sleep(500)
+        tries=tries+1
+    end
+end
+
+function checkInventoryAndSave(currentWorld)
+    for _, v in ipairs(Drop) do
+        if amount(v) >= 160 then
+            -- Önce Save world’e ID’siz giriş
+            local saveName = getWorldNameFromEntry(Save)
+            sendPacket(3, "action|join_request\nname|" .. saveName .. "\ninvitedWorld|0")
+            sleep(WarpDelay)
+
+            local tries = 0
+            while not isinworld(saveName) and tries < 15 do
+                sleep(2000)
+                tries = tries + 1
+            end
+
+            -- Sonra ID’li giriş
+            sendPacket(3, "action|join_request\nname|" .. Save .. "\ninvitedWorld|0")
+            sleep(WarpDelay)
+
+            tries = 0
+            while not isinworld(saveName) and tries < 15 do
+                sleep(500)
+                tries = tries + 1
+            end
+
+            GoToTile(POSX, POSY)
+            sleep(250)
+            DropAll()
+            sleep(DropDelay)
+
+            -- Tekrar current world’e dön
+            local worldName = getWorldNameFromEntry(currentWorld)
+            sendPacket(3, "action|join_request\nname|" .. worldName .. "\ninvitedWorld|0")
+            sleep(WarpDelay)
+
+            tries = 0
+            while not isinworld(worldName) and tries < 15 do
+                sleep(2500)
+                tries = tries + 1
+            end
+
+            sendPacket(3, "action|join_request\nname|" .. currentWorld .. "\ninvitedWorld|0")
+            sleep(WarpDelay)
+
+            while not isinworld(worldName) do
+                sleep(1000)
+            end
+
+            -- return → harvest kaldığı yerden devam edecek
+            return
+        end
+    end
+end
+
+-- ========== HARVEST ==========
+function harvest(currentWorld)
+    -- Önce ID'siz giriş yap
+    local worldName = getWorldNameFromEntry(currentWorld)
+    sendPacket(3, "action|join_request\nname|" .. worldName .. "\ninvitedWorld|0")
+    sleep(WarpDelay)
+
     local tries = 0
     while not isinworld(worldName) and tries < 15 do
         sleep(2500)
         tries = tries + 1
     end
 
-    -- World yüklenene kadar bekle
+    -- Şimdi ID'li giriş yap
+    sendPacket(3, "action|join_request\nname|" .. currentWorld .. "\ninvitedWorld|0")
+    sleep(WarpDelay)
+
+    tries = 0
+    while not isinworld(worldName) and tries < 15 do
+        sleep(500)
+        tries = tries + 1
+    end
+
+    -- Sonra tile’ların yüklenmesini bekle
     local loaded = false
     tries = 0
     while not loaded and tries < 20 do
@@ -298,103 +340,161 @@ function join(World)
         sleep(500)
         tries = tries + 1
     end
-end
 
--- ========== SAVE LOGIC DURING HARVEST ==========
-function checkInventoryAndSave(currentWorld)
-    local needSave = false
-    for _, v in ipairs(Drop) do
-        if amount(v) >= 200 then
-            needSave = true
-            break
-        end
-    end
-
-    if needSave then
-        join(Save)
-        local saveName = getWorldNameFromEntry(Save)
-        while not isinworld(saveName) do
-            sleep(1000)
-        end
-
-        GoToTile(POSX, POSY)
-        sleep(250)
-        DropAll()
-        sleep(DropDelay)
-
-        -- Current world'e geri dön
-        join(currentWorld)
-        local currentName = getWorldNameFromEntry(currentWorld)
-        while not isinworld(currentName) do
-            sleep(1000)
-        end
-
-        -- Geri dönünce worlddeki seedleri tekrar kontrol et
-        local retrySeeds = true
-        while retrySeeds do
-            retrySeeds = false
-            for y = 0, 53 do
-                for x = 0, 99 do
-                    if isSeed(checkTile(x,y).fg) and getExtraTile(x, y).ready then
-                        GoToTile(x, y)
-                        punch(x, y)
-                        sleep(HarvestDelay)
-                        collect()
-                        
-                        checkInventoryAndSave(currentWorld)
-                        retrySeeds = true
-                    end
-                end
-            end
-        end
-    end
-end
-
--- ========== HARVEST PROCESS ==========
-function harvest(currentWorld)
+    -- Harvest kısmı normal devam
     for y = 0, 53 do
         for x = 0, 99 do
-            if isSeed(checkTile(x,y).fg) and getExtraTile(x, y).ready then
-                GoToTile(x, y)
-                punch(x, y)
-                sleep(HarvestDelay)
+            if x+4 <= 99 and
+               (isSeed(checkTile(x,y).fg) and getExtraTile(x,y).ready) and
+               (isSeed(checkTile(x+1,y).fg) and getExtraTile(x+1,y).ready) and
+               (isSeed(checkTile(x+2,y).fg) and getExtraTile(x+2,y).ready) and
+               (isSeed(checkTile(x+3,y).fg) and getExtraTile(x+3,y).ready) and
+               (isSeed(checkTile(x+4,y).fg) and getExtraTile(x+4,y).ready) then
+               
+                checkInventoryAndSave(currentWorld)
+                GoToTile(x+2, y)
+                for i=0,4 do
+                    while isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
+                        checkInventoryAndSave(currentWorld)
+                        punch(x+i, y)
+                        sleep(HarvestDelay)
+                    end
+                end
                 collect()
-
+                sleep(180)
+                checkInventoryAndSave(currentWorld)
+            -- 4'lü kombinasyon
+            elseif x+3 <= 99 and
+               (isSeed(checkTile(x,y).fg) and getExtraTile(x,y).ready) and
+               (isSeed(checkTile(x+1,y).fg) and getExtraTile(x+1,y).ready) and
+               (isSeed(checkTile(x+2,y).fg) and getExtraTile(x+2,y).ready) and
+               (isSeed(checkTile(x+3,y).fg) and getExtraTile(x+3,y).ready) then
+               
+                checkInventoryAndSave(currentWorld)
+                GoToTile(x+1, y)
+                for i=0,3 do
+                    while isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
+                        checkInventoryAndSave(currentWorld)
+                        punch(x+i, y)
+                        sleep(HarvestDelay)
+                    end
+                end
+                collect()
+                sleep(180)
+                checkInventoryAndSave(currentWorld)
+            -- 3'lü kombinasyon
+            elseif x+2 <= 99 and
+               (isSeed(checkTile(x,y).fg) and getExtraTile(x,y).ready) and
+               (isSeed(checkTile(x+1,y).fg) and getExtraTile(x+1,y).ready) and
+               (isSeed(checkTile(x+2,y).fg) and getExtraTile(x+2,y).ready) then
+               
+                checkInventoryAndSave(currentWorld)
+                GoToTile(x+1, y)
+                for i=0,2 do
+                    while isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
+                        checkInventoryAndSave(currentWorld)
+                        punch(x+i, y)
+                        sleep(HarvestDelay)
+                    end
+                end
+                collect()
+                sleep(180)
+                checkInventoryAndSave(currentWorld)
+            -- 2'li kombinasyon
+            elseif x+1 <= 99 and
+               (isSeed(checkTile(x,y).fg) and getExtraTile(x,y).ready) and
+               (isSeed(checkTile(x+1,y).fg) and getExtraTile(x+1,y).ready) then
+               
+                checkInventoryAndSave(currentWorld)
+                GoToTile(x, y)
+                for i=0,1 do
+                    while isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
+                        checkInventoryAndSave(currentWorld)
+                        punch(x+i, y)
+                        sleep(HarvestDelay)
+                    end
+                end
+                collect()
+                sleep(180)
+                checkInventoryAndSave(currentWorld)
+            -- Tekli seed
+            elseif (isSeed(checkTile(x,y).fg) and getExtraTile(x,y).ready) then
+                checkInventoryAndSave(currentWorld)
+                GoToTile(x, y)
+                while isSeed(checkTile(x,y).fg) and getExtraTile(x, y).ready do
+                    checkInventoryAndSave(currentWorld)
+                    punch(x, y)
+                    sleep(HarvestDelay)
+                end
+                collect()
+                sleep(180)
                 checkInventoryAndSave(currentWorld)
             end
         end
     end
     checkRemain()
 end
-
--- ========== CHECK SEED ==========
 function checkSeed()
     for y = 0, 53 do
         for x = 0, 99 do
-            if isSeed(checkTile(x,y).fg) then
-                return true
-            end
+            if isSeed(checkTile(x,y).fg) then return true end
         end
     end
     return false
 end
 
--- ========== MAIN LOOP ==========
+
 function main()
     local currentIndex = 1
     while currentIndex <= #WorldList do
-        local currentWorld = WorldList[currentIndex]
-        join(currentWorld)
-
+        currentWorld = WorldList[currentIndex] -- artık global değişiyo
         repeat
             harvest(currentWorld)
         until not checkSeed()
-
         currentIndex = currentIndex + 1
     end
 end
 
-main()
+while true do
+    local ok, err = pcall(function()
+        main()
+    end)
+
+    if not ok then
+        
+
+        local saveName = getWorldNameFromEntry(Save)
+        local worldName = getWorldNameFromEntry(currentWorld)
+        local current = getWorld().name:lower()
+
+        if current == worldName:lower() then
+            -- Harvest worldündeyiz, kaldığı yerden devam et
+            harvest(currentWorld)
+
+        elseif current == saveName:lower() then
+            -- Save worldündeyiz → currentWorld'e dön
+            sendPacket(3, "action|join_request\nname|" .. worldName .. "\ninvitedWorld|0")
+            sleep(WarpDelay)
+            sendPacket(3, "action|join_request\nname|" .. currentWorld .. "\ninvitedWorld|0")
+            sleep(WarpDelay)
+            
+            -- World yüklendikten sonra harvest
+            local tries = 0
+            while not isinworld(worldName) and tries < 15 do
+                sleep(2500)
+                tries = tries + 1
+            end
+
+            harvest(currentWorld)
+
+        else
+            -- Başka bir world → bekle
+            sleep(1000)
+        end
+
+        sleep(2000) -- ekstra bekleme
+    end
+end
 end
 
 
