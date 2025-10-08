@@ -11,16 +11,8 @@ bypass = {
 }
 
 local userId = tostring(getDiscordID())
-
-function Time()
-    local now = os.time() or 0
-    return "<t:" .. tostring(now) .. ":R>"
-end
-
 function main()
-patchMemoryByName("Mod fly")
-patchMemoryByName("Anti bounce v2")
-patchMemoryByName("Can't Take Item")
+-- Functions
 function send(txt)
     local var = {}
     var[0] = "OnTextOverlay"
@@ -147,8 +139,46 @@ function Main()
         sleep(LoopDelay)
     end
 end
-
+while true do
+local ok, err = pcall(function()
 Main()
+end)
+
+if not ok then  
+      
+
+    local saveName = getWorldNameFromEntry(WorldDrop)  
+    local current = getWorld().name:lower()  
+
+    for _, worlds in ipairs(worldTake) do
+    local worldName = getWorldNameFromEntry(worlds)
+    end
+            if current == worldName:lower() then  
+        join(WorldTake[1])
+        Main()
+
+    elseif current == saveName:lower() then  
+        join(WorldDrop)
+        Main()
+          
+        -- World yüklendikten sonra harvest  
+          
+    else  
+        -- Başka bir world → bekle  
+        sleep(1000)  
+    end  
+    sleep(2000) -- ekstra bekleme  
+end
+
+end
+
+
+
+
+
+
+
+
 end
 
 
