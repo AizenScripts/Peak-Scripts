@@ -282,22 +282,7 @@ function checkInventoryAndSave(currentWorld)
             sleep(DropDelay)
 
             -- Tekrar current world’e dön
-            local worldName = getWorldNameFromEntry(currentWorld)
-            sendPacket(3, "action|join_request\nname|" .. worldName .. "\ninvitedWorld|0")
-            sleep(WarpDelay)
-
-            tries = 0
-            while not isinworld(worldName) and tries < 15 do
-                sleep(2500)
-                tries = tries + 1
-            end
-
-            sendPacket(3, "action|join_request\nname|" .. currentWorld .. "\ninvitedWorld|0")
-            sleep(WarpDelay)
-
-            while not isinworld(worldName) do
-                sleep(1000)
-            end
+            
 
             harvest(currentWorld)
             return
