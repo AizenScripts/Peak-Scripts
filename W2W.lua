@@ -12,6 +12,21 @@ bypass = {
 
 local userId = tostring(getDiscordID())
 function main()
+-- ****************{Script By Peak Store}****************
+
+-- Settings
+ItemId = {1094, 4584}
+WorldTake = {"SHINOVINVIN", "SHINOTRY|777"} -- | olmayabilir
+WorldDrop = "SAMETHILE2|6293"
+POSX = 75
+POSY = 23
+
+-- Delay Settings
+WarpDelay = 5000
+FindPathDelay = 1000
+DropDelay = 400
+LoopDelay = 3000
+
 -- Functions
 function send(txt)
     local var = {}
@@ -66,6 +81,7 @@ end
 
 -- DROP FUNCTIONS
 function failed()
+    local skibidi = math.floor(getLocal().pos.x / 32)
     send("`4Drop failed! Moving one step back...")
     POSX = POSX - 1
     findPath(POSX, POSY)
@@ -73,6 +89,7 @@ function failed()
 end
 
 function fdrop(id)
+local skibidis = math.floor(getLocal().pos.x / 32)
     local count = getItemCount(id)
     if count > 0 then
         sendPacket(2, "action|drop\n|itemID|"..id.."\n")
@@ -90,6 +107,7 @@ end
 -- MAIN LOOP
 function Main()
     while true do
+local skibiddi = math.floor(getLocal().pos.x / 32)
         local foundAny = false
 
         -- TAKE
@@ -126,8 +144,9 @@ function Main()
             send("`4Not in "..dropWorldName.." yet, waiting...")
             sleep(1000)
         end
-
+local skibiidi = math.floor(getLocal().pos.x / 32)
         for _, id in ipairs(ItemId) do
+            local skibidii = math.floor(getLocal().pos.x / 32)
             send("`9Dropping Item: "..id)
             findPath(POSX, POSY)
             sleep(FindPathDelay)
@@ -139,37 +158,35 @@ function Main()
         sleep(LoopDelay)
     end
 end
+
 while true do
 local ok, err = pcall(function()
 Main()
 end)
-
 if not ok then  
       
 
     local saveName = getWorldNameFromEntry(WorldDrop)  
     local current = getWorld().name:lower()  
 
-    for _, worlds in ipairs(worldTake) do
+    for _, worlds in ipairs(WorldTake) do
     local worldName = getWorldNameFromEntry(worlds)
-    end
+    
             if current == worldName:lower() then  
         join(WorldTake[1])
         Main()
-
-    elseif current == saveName:lower() then  
+end
+end
+        if current == saveName:lower() then  
+        sleep(1000)
         join(WorldDrop)
-        Main()
-          
-        -- World yüklendikten sonra harvest  
           
     else  
         -- Başka bir world → bekle  
-        sleep(1000)  
-    end  
+        sleep(1000)    
     sleep(2000) -- ekstra bekleme  
 end
-
+end
 end
 
 
@@ -178,6 +195,18 @@ end
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+    
 
 end
 
