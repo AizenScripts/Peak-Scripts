@@ -23,8 +23,7 @@ function mains()
 patchMemoryByName("Mod fly")
 patchMemoryByName("Anti bounce v2")
 patchMemoryByName("Can't Take Item")
-        
-            Drop = {}
+Drop = {}
 currentWorld = nil
 
 -- MoonCake itemlerini ekle
@@ -65,7 +64,8 @@ local function generateDirs(maxStep)
         for dx=-step,step do
             for dy=-step,step do
                 if not (dx==0 and dy==0) and math.max(math.abs(dx),math.abs(dy))==step then
-                    table.insert(dirs,{dx,dy,math.sqrt(dx*dx+dy*dy)})
+                    local cost = math.sqrt(dx*dx+dy*dy)
+                    table.insert(dirs,{dx,dy,cost})
                 end
             end
         end
@@ -201,6 +201,12 @@ function GoToTile(goalX, goalY)
 end
 
 -- ========== UTILS ==========
+function warn(str)
+var = {}
+var[0] = "OnTextOverlay"
+var[1] = "`0[`4Warning`0] " .. str .. "\n\n..."
+sendVariant(var)
+end
 function getWorldNameFromEntry(entry) return entry:match("([^|]+)") or entry end
 function isinworld(n) return getWorld().name:lower() == n:lower() end
 function isDrop(id) for _, v in ipairs(Drop) do if v == id then return true end end return false end
@@ -282,8 +288,7 @@ function checkInventoryAndSave(currentWorld)
             DropAll()
             sleep(DropDelay)
 
-            -- Tekrar current world’e dön
-            
+           
 
             harvest(currentWorld)
             return
@@ -292,6 +297,7 @@ function checkInventoryAndSave(currentWorld)
 end
 
 -- ========== HARVEST ==========
+
 function harvest(currentWorld)
     -- Önce ID'siz giriş yap
     local worldName = getWorldNameFromEntry(currentWorld)
@@ -339,6 +345,7 @@ function harvest(currentWorld)
                
                 checkInventoryAndSave(currentWorld)
                 GoToTile(x+2, y)
+warn("Dont `4MOVE")
                 for i=0,4 do
                     while isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
                         checkInventoryAndSave(currentWorld)
@@ -358,6 +365,7 @@ function harvest(currentWorld)
                
                 checkInventoryAndSave(currentWorld)
                 GoToTile(x+1, y)
+warn("Dont `4MOVE")
                 for i=0,3 do
                     while isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
                         checkInventoryAndSave(currentWorld)
@@ -376,6 +384,7 @@ function harvest(currentWorld)
                
                 checkInventoryAndSave(currentWorld)
                 GoToTile(x+1, y)
+warn("Dont `4MOVE")
                 for i=0,2 do
                     while isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
                         checkInventoryAndSave(currentWorld)
@@ -393,6 +402,7 @@ function harvest(currentWorld)
                
                 checkInventoryAndSave(currentWorld)
                 GoToTile(x, y)
+warn("Dont `4MOVE")
                 for i=0,1 do
                     while isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
                         checkInventoryAndSave(currentWorld)
@@ -407,6 +417,7 @@ function harvest(currentWorld)
             elseif (isSeed(checkTile(x,y).fg) and getExtraTile(x,y).ready) then
                 checkInventoryAndSave(currentWorld)
                 GoToTile(x, y)
+warn("Dont `4MOVE")
                 while isSeed(checkTile(x,y).fg) and getExtraTile(x, y).ready do
                     checkInventoryAndSave(currentWorld)
                     punch(x, y)
@@ -418,8 +429,19 @@ function harvest(currentWorld)
             end
         end
     end
-    checkRemain()
+    checkSeed()
 end
+function checkSeed()
+    for y = 0, 53 do
+        for x = 0, 99 do
+            if isSeed(checkTile(x,y).fg) then return true end
+        end
+    end
+    return false
+end
+
+
+
 function checkSeed()
     for y = 0, 53 do
         for x = 0, 99 do
@@ -481,6 +503,27 @@ while true do
         sleep(2000) -- ekstra bekleme
     end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                    
 end
 
 
