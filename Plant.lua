@@ -213,6 +213,12 @@ return true
 end
 
 -- ========== GO TO & COLLECT ==========
+function warn(str)
+var = {}
+var[0] = "OnTextOverlay"
+var[1] = "`0[`4Warning`0] " .. str .. "\n\n..."
+sendVariant(var)
+end
 function collect()
 for _, obj in pairs(getWorldObject()) do
 if math.abs(getLocal().pos.x - obj.pos.x) < 120 and math.abs(getLocal().pos.y - obj.pos.y) < 120 then
@@ -288,7 +294,8 @@ for x = 0, 99 do
                checkTile(x+4,y).fg == 0 and canPlant(x+4,y) then  
 
                 checkInventoryAndSave(currentWorld) -- Save mantığı  
-                GoToTile(x + 2, y)  
+                GoToTile(x + 2, y)
+warn("Dont `4MOVE")  
                 for i = 0, 4 do  
                     while checkTile(x+i,y).fg == 0 do  
                         checkInventoryAndSave(currentWorld)  
@@ -307,7 +314,8 @@ for x = 0, 99 do
                checkTile(x+3,y).fg == 0 and canPlant(x+3,y) then  
 
                 checkInventoryAndSave(currentWorld)  
-                GoToTile(x + 1, y)  
+                GoToTile(x + 1, y) 
+warn("Dont `4MOVE")   
                 for i = 0, 3 do  
                     while checkTile(x+i,y).fg == 0 do  
                         checkInventoryAndSave(currentWorld)  
@@ -325,7 +333,8 @@ for x = 0, 99 do
                checkTile(x+2,y).fg == 0 and canPlant(x+2,y) then  
 
                 checkInventoryAndSave(currentWorld)  
-                GoToTile(x + 1, y)  
+                GoToTile(x + 1, y) 
+warn("Dont `4MOVE")   
                 for i = 0, 2 do  
                     while checkTile(x+i,y).fg == 0 do  
                         checkInventoryAndSave(currentWorld)  
@@ -343,6 +352,7 @@ for x = 0, 99 do
 
                 checkInventoryAndSave(currentWorld)  
                 GoToTile(x, y)  
+warn("Dont `4MOVE")  
                 for i = 0, 1 do  
                     while checkTile(x+i,y).fg == 0 do  
                         checkInventoryAndSave(currentWorld)  
@@ -356,7 +366,8 @@ for x = 0, 99 do
             -- 1'li ekim  
             if checkTile(x,y).fg == 0 and canPlant(x,y) then  
                 checkInventoryAndSave(currentWorld)  
-                GoToTile(x, y)  
+                GoToTile(x, y) 
+warn("Dont `4MOVE")   
                 while checkTile(x,y).fg == 0 do  
                     checkInventoryAndSave(currentWorld)  
                     requestTileChange(x, y, SeedID)  
@@ -423,6 +434,14 @@ if not ok then
 end
 
 end
+
+
+
+
+
+
+
+    
 end
 
 function Time()
