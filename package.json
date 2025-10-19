@@ -1,0 +1,13 @@
+{
+  "name": "RoleAddSystem",
+  "version": "1.0.0",
+  "description": "Discord bot that records user IDs per role and updates Lua bypass blocks with mapping support.",
+  "main": "index.js",
+  "engines": {
+    "node": ">=16.9.0"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.0",
+    "dotenv": "^16.0.0"
+  }
+}
