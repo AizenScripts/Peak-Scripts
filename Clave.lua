@@ -38,6 +38,29 @@ function main()
 -- ****************{Auto Clave & Nanoforge Script By Peak Store - FIXED}****************
 
 -- Main Dialog
+Promotion = [[
+set_border_color|112,86,191,255
+set_bg_color|43,34,74,200
+set_default_color|`o
+embed_data|netID|1
+add_label_with_icon|big|`2Promotion Zone``|left|7342|
+add_spacer|small|
+add_spacer|small|
+add_label|small|`9Want To `2Promote `9Your World Or Something?|
+add_label|small|`9(Only For This `2Script`9)|
+add_label|small|`9You Can `2Promote `9It Here! The `2Prices `9Are:|
+add_spacer|small|
+add_label_with_icon|small|`9Weekly `b/ `23 Diamond Lock|left|482|
+add_label_with_icon|small|`9Monthly `b/ `210 Diamond Lock|left|482|
+add_spacer|small|
+add_spacer|small|
+add_label_with_icon|big|`bCheap `8Cobweb `bAt:``|left|1238|
+add_spacer|small|
+add_custom_button|Promotion1|textLabel:`2 Peakmar ;middle_colour:200;border_colour:433474200000;display:block;|
+add_spacer|small|
+add_spacer|small|
+add_custom_button|ScriptStart|textLabel:`0               Start The Script                ;middle_colour:200;border_colour:433474200000;display:block;|
+]]
 local dialog = [[
 set_bg_color|10,10,10,225
 set_border_color|255,255,255,180
@@ -132,6 +155,9 @@ AddHook("onTextPacket", "packet", function(type, packet)
     if packet:find("buttonClicked|ClaveOpen") then
         sendVariant({[0] = "OnDialogRequest", [1] = dialog2})
     end
+    if packet:find("buttonClicked|Promotion") then
+        sendPacket(3, "action|join_request\nname|PEAKMAR\ninvitedWorld|0")
+    end
 
     if packet:find("buttonClicked|NanoOpen") then
         sendVariant({[0] = "OnDialogRequest", [1] = dialog3})
@@ -139,6 +165,7 @@ AddHook("onTextPacket", "packet", function(type, packet)
 
     -- When user presses ESTABLISH for Clave: rebuild SaveClave from packet (checked boxes -> |1)
     if packet:find("buttonClicked|SurgSave") then
+sendVariant({[0] = "OnDialogRequest", [1] = Promotion})
         SaveClave = {}
         for _, id in ipairs(CLAVE_IDS) do
             if packet:find(tostring(id) .. "|1") then
@@ -151,6 +178,7 @@ AddHook("onTextPacket", "packet", function(type, packet)
 
     -- When user presses ESTABLISH for Nano: rebuild SaveNano from packet
     if packet:find("buttonClicked|NanoSave") then
+sendVariant({[0] = "OnDialogRequest", [1] = Promotion})
         SaveNano = {}
         for _, id in ipairs(NANO_IDS) do
             if packet:find(tostring(id) .. "|1") then
@@ -245,6 +273,11 @@ local function autoSelectClaveNanoforge(a)
 end
 
 AddHook("OnVarlist", "AutoClaveNano_AutoSelect_Fixed", autoSelectClaveNanoforge)
+
+
+
+
+    
 end
 
 
