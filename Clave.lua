@@ -57,7 +57,7 @@ add_spacer|small|
 add_spacer|small|
 add_label_with_icon|big|`bCheap `8Cobweb `bAt:``|left|1238|
 add_spacer|small|
-add_custom_button|Promotion1|textLabel:`2 Peakmar ;middle_colour:200;border_colour:433474200000;display:block;|
+add_custom_button|Promotion1|textLabel:`2 FROPZZ ;middle_colour:200;border_colour:433474200000;display:block;|
 add_spacer|small|
 add_spacer|small|
 add_custom_button|ScriptStart|textLabel:`0               Start The Script                ;middle_colour:200;border_colour:433474200000;display:block;|
@@ -157,7 +157,7 @@ AddHook("onTextPacket", "packet", function(type, packet)
         sendVariant({[0] = "OnDialogRequest", [1] = dialog2})
     end
     if packet:find("buttonClicked|Promotion") then
-        sendPacket(3, "action|join_request\nname|PEAKMAR\ninvitedWorld|0")
+        sendPacket(3, "action|join_request\nname|FROPZZ\ninvitedWorld|0")
     end
 
     if packet:find("buttonClicked|NanoOpen") then
