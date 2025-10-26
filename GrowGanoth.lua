@@ -18,15 +18,14 @@ function mains()
 patchMemoryByName("Mod fly")
 patchMemoryByName("Anti bounce v2")
 patchMemoryByName("Can't Take Item")
-Warp_Delay = 2000
 Save = Drop_World
 
 function path(x, y)
 findPath(x, y)
-sleep(300)
+sleep(Path_delay)
 while math.floor(getLocal().pos.x/32) ~= x and math.floor(getLocal().pos.y/32) ~= y do
 findPath(x, y)
-sleep(300)
+sleep(Path_delay)
 end
 end
 
@@ -56,9 +55,9 @@ function fdrop(id)
         local maxTries = 3
         while getItemCount(id) >= count and tries < maxTries do
             sendPacket(2, "action|drop\n|itemID|"..id.."\n")
-            sleep(300)
+            sleep(Drop_delay)
             sendPacket(2, "action|dialog_return\ndialog_name|drop_item\nitemID|"..id.."|\ncount|"..count.."\n")
-            sleep(500)
+            sleep(Drop_delay)
             tries = tries + 1
         end
         if getItemCount(id) >= count then failed() end
@@ -70,7 +69,7 @@ function DropAll()
         local count = getItemCount(v)
         if count > 0 then
             fdrop(v)
-            sleep(500)
+            sleep(Drop_Delay)
         end
     end
 end
@@ -90,7 +89,7 @@ end
 function join(World)
     
             sendPacket(3, "action|join_request\nname|" .. World .. "\ninvitedWorld|0")
-            sleep(5000)
+            sleep(Warp_Delay)
         
 end
 
@@ -123,7 +122,7 @@ function checkInventoryAndSave()
             join(Drop_World)
             sleep(Warp_Delay)
             findPath(Drop_Position[1], Drop_Position[2])
-            sleep(300)
+            sleep(Path_Delay)
             DropAll()
             sleep(1000)
             return true
@@ -134,18 +133,18 @@ end
 azzzz = "GROWGANOTH"
 function DropGrowGanoth()
     join(azzzz)
-    sleep(1500)
+    sleep(Warp_Delay)
     if getItemCount(Block_Drop) >= 1 then
         while getItemCount(Block_Drop) >= 1 do
             path(49, 15)
-            sleep(200)
+            sleep(Path_Delay)
             Drop(Block_Drop, 1)
-            sleep(1250)
+            sleep(Drop_Delay)
         end
     else
         checkInventoryAndSave()
         join(Block_World)
-        sleep(1500)
+        sleep(Warp_Delay)
         local found = goToTileAndCollect(Block_Drop)
         if not found then
             sleep(5000)
@@ -198,6 +197,13 @@ end
 
 
 
+
+
+
+
+
+
+    
 
 
 
