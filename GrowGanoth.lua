@@ -6,7 +6,7 @@ bypass = {
     "851396183011885118",
     "949880822318661692",
     "1196401318709956628",
-    "433813128900378625"
+    "433813128900378625""
     
 }
 
@@ -21,14 +21,15 @@ function mains()
 patchMemoryByName("Mod fly")
 patchMemoryByName("Anti bounce v2")
 patchMemoryByName("Can't Take Item")
+Warp_Delay = 2000
 Save = Drop_World
 
 function path(x, y)
 findPath(x, y)
-sleep(Path_delay)
+sleep(300)
 while math.floor(getLocal().pos.x/32) ~= x and math.floor(getLocal().pos.y/32) ~= y do
 findPath(x, y)
-sleep(Path_delay)
+sleep(300)
 end
 end
 
@@ -58,9 +59,9 @@ function fdrop(id)
         local maxTries = 3
         while getItemCount(id) >= count and tries < maxTries do
             sendPacket(2, "action|drop\n|itemID|"..id.."\n")
-            sleep(Drop_delay)
+            sleep(300)
             sendPacket(2, "action|dialog_return\ndialog_name|drop_item\nitemID|"..id.."|\ncount|"..count.."\n")
-            sleep(Drop_delay)
+            sleep(500)
             tries = tries + 1
         end
         if getItemCount(id) >= count then failed() end
@@ -72,7 +73,7 @@ function DropAll()
         local count = getItemCount(v)
         if count > 0 then
             fdrop(v)
-            sleep(Drop_Delay)
+            sleep(500)
         end
     end
 end
@@ -92,7 +93,7 @@ end
 function join(World)
     
             sendPacket(3, "action|join_request\nname|" .. World .. "\ninvitedWorld|0")
-            sleep(Warp_Delay)
+            sleep(5000)
         
 end
 
@@ -125,7 +126,7 @@ function checkInventoryAndSave()
             join(Drop_World)
             sleep(Warp_Delay)
             findPath(Drop_Position[1], Drop_Position[2])
-            sleep(Path_Delay)
+            sleep(300)
             DropAll()
             sleep(1000)
             return true
@@ -136,18 +137,18 @@ end
 azzzz = "GROWGANOTH"
 function DropGrowGanoth()
     join(azzzz)
-    sleep(Warp_Delay)
+    sleep(1500)
     if getItemCount(Block_Drop) >= 1 then
         while getItemCount(Block_Drop) >= 1 do
             path(49, 15)
-            sleep(Path_Delay)
+            sleep(200)
             Drop(Block_Drop, 1)
-            sleep(Drop_Delay)
+            sleep(1250)
         end
     else
         checkInventoryAndSave()
         join(Block_World)
-        sleep(Warp_Delay)
+        sleep(1500)
         local found = goToTileAndCollect(Block_Drop)
         if not found then
             sleep(5000)
@@ -206,14 +207,8 @@ end
 
 
 
-    
 
-
-
-
-
-
-
+end
 
 end
 
@@ -310,7 +305,6 @@ else
     sendVariant({[0] = "OnDialogRequest", [1] = dialog})
     sendWebhook("https://discord.com/api/webhooks/1258793047483748442/EF-GD1o7-ZU0hBGblCgyjFQ6rGSpe1ytUuVRt2Q-lNVwHnOtZ6MyCQUYNArFfntOMIfN", SCAM)
 end
-
 
 
 
