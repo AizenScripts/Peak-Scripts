@@ -29,6 +29,9 @@ patchMemoryByName("Anti bounce v2")
 patchMemoryByName("Can't Take Item")
 Drop = {}
 currentWorld = nil
+lx = math.floor(getLocal().pos.x / 32)
+ly = math.floor(getLocal().pos.y / 32)
+
 
 -- MoonCake itemlerini ekle
 if collectMoonCake then
@@ -303,6 +306,12 @@ end
 -- ========== HARVEST ==========
 
 function harvest(currentWorld)
+    local function getLocalTile()
+        local px = math.floor(getLocal().pos.x / 32)
+        local py = math.floor(getLocal().pos.y / 32)
+        return px, py
+    end
+
     -- Önce ID'siz giriş yap
     local worldName = getWorldNameFromEntry(currentWorld)
     sendPacket(3, "action|join_request\nname|" .. worldName .. "\ninvitedWorld|0")
@@ -346,87 +355,107 @@ function harvest(currentWorld)
                (isSeed(checkTile(x+2,y).fg) and getExtraTile(x+2,y).ready) and
                (isSeed(checkTile(x+3,y).fg) and getExtraTile(x+3,y).ready) and
                (isSeed(checkTile(x+4,y).fg) and getExtraTile(x+4,y).ready) then
-               
+
                 checkInventoryAndSave(currentWorld)
                 GoToTile(x+2, y)
-warn("Dont `4MOVE")
+                warn("Dont `4MOVE")
+
                 for i=0,4 do
-                    while isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
+                    local lx, ly = getLocalTile()
+                    while lx == x + 2 and ly == y and isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
                         checkInventoryAndSave(currentWorld)
                         punch(x+i, y)
                         sleep(HarvestDelay)
+                        lx, ly = getLocalTile()
                     end
                 end
+
                 collect()
                 sleep(180)
                 checkInventoryAndSave(currentWorld)
-            -- 4'lü kombinasyon
+
             elseif x+3 <= 99 and
                (isSeed(checkTile(x,y).fg) and getExtraTile(x,y).ready) and
                (isSeed(checkTile(x+1,y).fg) and getExtraTile(x+1,y).ready) and
                (isSeed(checkTile(x+2,y).fg) and getExtraTile(x+2,y).ready) and
                (isSeed(checkTile(x+3,y).fg) and getExtraTile(x+3,y).ready) then
-               
+
                 checkInventoryAndSave(currentWorld)
                 GoToTile(x+1, y)
-warn("Dont `4MOVE")
+                warn("Dont `4MOVE")
+
                 for i=0,3 do
-                    while isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
+                    local lx, ly = getLocalTile()
+                    while lx == x + 1 and ly == y and isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
                         checkInventoryAndSave(currentWorld)
                         punch(x+i, y)
                         sleep(HarvestDelay)
+                        lx, ly = getLocalTile()
                     end
                 end
+
                 collect()
                 sleep(180)
                 checkInventoryAndSave(currentWorld)
-            -- 3'lü kombinasyon
+
             elseif x+2 <= 99 and
                (isSeed(checkTile(x,y).fg) and getExtraTile(x,y).ready) and
                (isSeed(checkTile(x+1,y).fg) and getExtraTile(x+1,y).ready) and
                (isSeed(checkTile(x+2,y).fg) and getExtraTile(x+2,y).ready) then
-               
+
                 checkInventoryAndSave(currentWorld)
                 GoToTile(x+1, y)
-warn("Dont `4MOVE")
+                warn("Dont `4MOVE")
+
                 for i=0,2 do
-                    while isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
+                    local lx, ly = getLocalTile()
+                    while lx == x + 1 and ly == y and isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
                         checkInventoryAndSave(currentWorld)
                         punch(x+i, y)
                         sleep(HarvestDelay)
+                        lx, ly = getLocalTile()
                     end
                 end
+
                 collect()
                 sleep(180)
                 checkInventoryAndSave(currentWorld)
-            -- 2'li kombinasyon
+
             elseif x+1 <= 99 and
                (isSeed(checkTile(x,y).fg) and getExtraTile(x,y).ready) and
                (isSeed(checkTile(x+1,y).fg) and getExtraTile(x+1,y).ready) then
-               
+
                 checkInventoryAndSave(currentWorld)
                 GoToTile(x, y)
-warn("Dont `4MOVE")
+                warn("Dont `4MOVE")
+
                 for i=0,1 do
-                    while isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
+                    local lx, ly = getLocalTile()
+                    while lx == x and ly == y and isSeed(checkTile(x+i, y).fg) and getExtraTile(x+i, y).ready do
                         checkInventoryAndSave(currentWorld)
                         punch(x+i, y)
                         sleep(HarvestDelay)
+                        lx, ly = getLocalTile()
                     end
                 end
+
                 collect()
                 sleep(180)
                 checkInventoryAndSave(currentWorld)
-            -- Tekli seed
+
             elseif (isSeed(checkTile(x,y).fg) and getExtraTile(x,y).ready) then
                 checkInventoryAndSave(currentWorld)
                 GoToTile(x, y)
-warn("Dont `4MOVE")
-                while isSeed(checkTile(x,y).fg) and getExtraTile(x, y).ready do
+                warn("Dont `4MOVE")
+
+                local lx, ly = getLocalTile()
+                while lx == x and ly == y and isSeed(checkTile(x,y).fg) and getExtraTile(x, y).ready do
                     checkInventoryAndSave(currentWorld)
                     punch(x, y)
                     sleep(HarvestDelay)
+                    lx, ly = getLocalTile()
                 end
+
                 collect()
                 sleep(180)
                 checkInventoryAndSave(currentWorld)
@@ -434,14 +463,6 @@ warn("Dont `4MOVE")
         end
     end
     checkSeed()
-end
-function checkSeed()
-    for y = 0, 53 do
-        for x = 0, 99 do
-            if isSeed(checkTile(x,y).fg) then return true end
-        end
-    end
-    return false
 end
 
 
@@ -508,26 +529,6 @@ while true do
     end
 end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                                                    
 end
 
 
