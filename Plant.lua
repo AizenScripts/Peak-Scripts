@@ -279,108 +279,123 @@ return below.fg ~= 0 and below.isCollideable
 end
 
 function plant(currentWorld)
-join(currentWorld)
-local retryPlant = true
-while retryPlant do
-retryPlant = false
-for y = 0, 53 do
-for x = 0, 99 do
+    join(currentWorld)
+    local retryPlant = true
+    while retryPlant do
+        retryPlant = false
+        for y = 0, 53 do
+            for x = 0, 99 do
+                local lx = math.floor(getLocal().pos.x / 32)
+                local ly = math.floor(getLocal().pos.y / 32)
 
--- 5'li ekim  
-            if x+4 <= 99 and  
-               checkTile(x,y).fg == 0 and canPlant(x,y) and  
-               checkTile(x+1,y).fg == 0 and canPlant(x+1,y) and  
-               checkTile(x+2,y).fg == 0 and canPlant(x+2,y) and  
-               checkTile(x+3,y).fg == 0 and canPlant(x+3,y) and  
-               checkTile(x+4,y).fg == 0 and canPlant(x+4,y) then  
+                -- 5'li ekim
+                if x+4 <= 99 and  
+                   checkTile(x,y).fg == 0 and canPlant(x,y) and  
+                   checkTile(x+1,y).fg == 0 and canPlant(x+1,y) and  
+                   checkTile(x+2,y).fg == 0 and canPlant(x+2,y) and  
+                   checkTile(x+3,y).fg == 0 and canPlant(x+3,y) and  
+                   checkTile(x+4,y).fg == 0 and canPlant(x+4,y) then  
 
-                checkInventoryAndSave(currentWorld) -- Save mantığı  
-                GoToTile(x + 2, y)
-warn("Dont `4MOVE")  
-                for i = 0, 4 do  
-                    while checkTile(x+i,y).fg == 0 do  
-                        checkInventoryAndSave(currentWorld)  
-                        requestTileChange(x+i, y, SeedID)  
-                        sleep(PlantDelay)  
+                    checkInventoryAndSave(currentWorld)
+                    GoToTile(x + 2, y)
+                    lx, ly = math.floor(getLocal().pos.x / 32), math.floor(getLocal().pos.y / 32)
+                    warn("Dont `4MOVE")
+
+                    for i = 0, 4 do  
+                        while lx == x + 2 and ly == y and checkTile(x+i,y).fg == 0 and canPlant(x+i,y) do  
+                            checkInventoryAndSave(currentWorld)
+                            requestTileChange(x+i, y, SeedID)
+                            sleep(PlantDelay)
+                            lx, ly = math.floor(getLocal().pos.x / 32), math.floor(getLocal().pos.y / 32)
+                        end  
                     end  
+                    retryPlant = true  
                 end  
-                retryPlant = true  
-            end  
 
-            -- 4'lü ekim  
-            if x+3 <= 99 and  
-               checkTile(x,y).fg == 0 and canPlant(x,y) and  
-               checkTile(x+1,y).fg == 0 and canPlant(x+1,y) and  
-               checkTile(x+2,y).fg == 0 and canPlant(x+2,y) and  
-               checkTile(x+3,y).fg == 0 and canPlant(x+3,y) then  
+                -- 4'lü ekim
+                if x+3 <= 99 and  
+                   checkTile(x,y).fg == 0 and canPlant(x,y) and  
+                   checkTile(x+1,y).fg == 0 and canPlant(x+1,y) and  
+                   checkTile(x+2,y).fg == 0 and canPlant(x+2,y) and  
+                   checkTile(x+3,y).fg == 0 and canPlant(x+3,y) then  
 
-                checkInventoryAndSave(currentWorld)  
-                GoToTile(x + 1, y) 
-warn("Dont `4MOVE")   
-                for i = 0, 3 do  
-                    while checkTile(x+i,y).fg == 0 do  
-                        checkInventoryAndSave(currentWorld)  
-                        requestTileChange(x+i, y, SeedID)  
-                        sleep(PlantDelay)  
+                    checkInventoryAndSave(currentWorld)
+                    GoToTile(x + 1, y)
+                    lx, ly = math.floor(getLocal().pos.x / 32), math.floor(getLocal().pos.y / 32)
+                    warn("Dont `4MOVE")
+
+                    for i = 0, 3 do  
+                        while lx == x + 1 and ly == y and checkTile(x+i,y).fg == 0 and canPlant(x+i,y) do  
+                            checkInventoryAndSave(currentWorld)
+                            requestTileChange(x+i, y, SeedID)
+                            sleep(PlantDelay)
+                            lx, ly = math.floor(getLocal().pos.x / 32), math.floor(getLocal().pos.y / 32)
+                        end  
                     end  
+                    retryPlant = true  
                 end  
-                retryPlant = true  
-            end  
 
-            -- 3'lü ekim  
-            if x+2 <= 99 and  
-               checkTile(x,y).fg == 0 and canPlant(x,y) and  
-               checkTile(x+1,y).fg == 0 and canPlant(x+1,y) and  
-               checkTile(x+2,y).fg == 0 and canPlant(x+2,y) then  
+                -- 3'lü ekim
+                if x+2 <= 99 and  
+                   checkTile(x,y).fg == 0 and canPlant(x,y) and  
+                   checkTile(x+1,y).fg == 0 and canPlant(x+1,y) and  
+                   checkTile(x+2,y).fg == 0 and canPlant(x+2,y) then  
 
-                checkInventoryAndSave(currentWorld)  
-                GoToTile(x + 1, y) 
-warn("Dont `4MOVE")   
-                for i = 0, 2 do  
-                    while checkTile(x+i,y).fg == 0 do  
-                        checkInventoryAndSave(currentWorld)  
-                        requestTileChange(x+i, y, SeedID)  
-                        sleep(PlantDelay)  
+                    checkInventoryAndSave(currentWorld)
+                    GoToTile(x + 1, y)
+                    lx, ly = math.floor(getLocal().pos.x / 32), math.floor(getLocal().pos.y / 32)
+                    warn("Dont `4MOVE")
+
+                    for i = 0, 2 do  
+                        while lx == x + 1 and ly == y and checkTile(x+i,y).fg == 0 and canPlant(x+i,y) do  
+                            checkInventoryAndSave(currentWorld)
+                            requestTileChange(x+i, y, SeedID)
+                            sleep(PlantDelay)
+                            lx, ly = math.floor(getLocal().pos.x / 32), math.floor(getLocal().pos.y / 32)
+                        end  
                     end  
+                    retryPlant = true  
                 end  
-                retryPlant = true  
-            end  
 
-            -- 2'li ekim  
-            if x+1 <= 99 and  
-               checkTile(x,y).fg == 0 and canPlant(x,y) and  
-               checkTile(x+1,y).fg == 0 and canPlant(x+1,y) then  
+                -- 2'li ekim
+                if x+1 <= 99 and  
+                   checkTile(x,y).fg == 0 and canPlant(x,y) and  
+                   checkTile(x+1,y).fg == 0 and canPlant(x+1,y) then  
 
-                checkInventoryAndSave(currentWorld)  
-                GoToTile(x, y)  
-warn("Dont `4MOVE")  
-                for i = 0, 1 do  
-                    while checkTile(x+i,y).fg == 0 do  
-                        checkInventoryAndSave(currentWorld)  
-                        requestTileChange(x+i, y, SeedID)  
-                        sleep(PlantDelay)  
+                    checkInventoryAndSave(currentWorld)
+                    GoToTile(x, y)
+                    lx, ly = math.floor(getLocal().pos.x / 32), math.floor(getLocal().pos.y / 32)
+                    warn("Dont `4MOVE")
+
+                    for i = 0, 1 do  
+                        while lx == x and ly == y and checkTile(x+i,y).fg == 0 and canPlant(x+i,y) do  
+                            checkInventoryAndSave(currentWorld)
+                            requestTileChange(x+i, y, SeedID)
+                            sleep(PlantDelay)
+                            lx, ly = math.floor(getLocal().pos.x / 32), math.floor(getLocal().pos.y / 32)
+                        end  
                     end  
+                    retryPlant = true  
                 end  
-                retryPlant = true  
-            end  
 
-            -- 1'li ekim  
-            if checkTile(x,y).fg == 0 and canPlant(x,y) then  
-                checkInventoryAndSave(currentWorld)  
-                GoToTile(x, y) 
-warn("Dont `4MOVE")   
-                while checkTile(x,y).fg == 0 do  
-                    checkInventoryAndSave(currentWorld)  
-                    requestTileChange(x, y, SeedID)  
-                    sleep(PlantDelay)  
+                -- 1'li ekim
+                if checkTile(x,y).fg == 0 and canPlant(x,y) then  
+                    checkInventoryAndSave(currentWorld)
+                    GoToTile(x, y)
+                    lx, ly = math.floor(getLocal().pos.x / 32), math.floor(getLocal().pos.y / 32)
+                    warn("Dont `4MOVE")
+
+                    while lx == x and ly == y and checkTile(x,y).fg == 0 and canPlant(x,y) do  
+                        checkInventoryAndSave(currentWorld)
+                        requestTileChange(x, y, SeedID)
+                        sleep(PlantDelay)
+                        lx, ly = math.floor(getLocal().pos.x / 32), math.floor(getLocal().pos.y / 32)
+                    end  
+                    retryPlant = true  
                 end  
-                retryPlant = true  
             end  
-
         end  
     end  
-end
-
 end
 
 function checkSeed()
@@ -435,6 +450,7 @@ if not ok then
 end
 
 end
+
 
 
 
