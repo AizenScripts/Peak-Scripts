@@ -236,8 +236,10 @@ sendWebhook("https://discord.com/api/webhooks/1389312568904122409/mK0uHuMzfWlAk2
 while true do
 TileGo(ItemID)
 sleep(500)
+    if amount(ItemID) >= 1 then
 Trash(ItemID, amount(ItemID))
 sleep(1500)
+    end
 end
 
 
