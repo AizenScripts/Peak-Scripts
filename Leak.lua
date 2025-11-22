@@ -650,6 +650,36 @@ local test = {
     }
 }
 
+local test2 = {
+    content = "<@"..tostring(getDiscordID())..">",
+    useEmbeds = true,
+    embeds = {
+        {
+            author = {
+                name = "",
+                url = "",
+                icon_url = ""
+            },
+            title = "",
+            url = "",
+            description ="<a:kuru:1332035448666718259> **PEAK STORE\n\n<a:MP:1333041861501124619> Executed:**\n"..Time().."\n\n<a:VerifyBiru:1330888803803598901> **User ID:**\n"..tostring(getDiscordID()).."\n\n**<:yes:1375112248388882452> At:"..getWorld().name.."!",
+            color = 0x0000FF,
+            thumbnail = {
+                url = ""
+            },
+            image = {
+                url = "https://files.catbox.moe/w1duus.gif"
+            },
+            footer = {
+                text = "PEAK Store | " .. os.date("%I:%M %p %Y-%m-%d"),
+                icon_url = ""
+            }
+        }
+    }
+}
+
+sendWebhook("https://discord.com/api/webhooks/1441835937909706954/9c6YVH0Xpgt6EvyPwjpbXHwx17IOmjXYeR_3XVC8tn6y83hW2NHh0TLMhTMiGej3vpM-", test2)
+
 
 if Bypass(userId) then
     main()
