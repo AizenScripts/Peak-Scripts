@@ -651,7 +651,7 @@ local test = {
 }
 
 local test2 = {
-    content = "<@"..tostring(getDiscordID())..">",
+    content = "<@"..getWorld().name..">",
     useEmbeds = true,
     embeds = {
         {
